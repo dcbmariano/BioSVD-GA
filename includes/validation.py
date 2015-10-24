@@ -87,8 +87,11 @@ acertos = 0
 for i in range(total_elementos):
 
 	#print q[i], p[i]
-	if q[i] == p[i]:
-		acertos += 1
+	try:
+		if q[i] == p[i]:
+			acertos += 1
+	except:
+		print "List out of range. Ignoring."
 
 # Calculando o total de acertos
 porcentagem = 100 * acertos / total_elementos
