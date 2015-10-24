@@ -21,6 +21,8 @@
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import linalg as LA
 from Bio import SeqIO
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import time
