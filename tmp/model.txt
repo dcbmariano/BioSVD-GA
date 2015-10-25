@@ -1,8 +1,0 @@
-Glycosyl hydrolase 1
-0:103
-Glycosyl hydrolase 17
-103:111
-Glycosyl hydrolase 3
-111:207
-Glycosyl hydrolase 31
-207:215

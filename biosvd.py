@@ -3,7 +3,7 @@
 #    Function: Implementa o metodo de svd para classificacao de proteinas
 # Description: inclui: delaunay.py e sort.py - Por enquanto estamos limitado a 23 cores no plot assim so podemos ter 23 familas diferentes. Isso sera revisado(Por Thiago)
 #      Author: Thiago da Silva Correia, Diego Mariano, Jose Renato Barroso, Raquel Cardoso de Melo-Minardi
-#     Version: 5
+#     Version: 6
 
 
 # Hierarquia do programa ******************************************
@@ -21,6 +21,8 @@
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import linalg as LA
 from Bio import SeqIO
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -31,9 +33,9 @@ import os
 
 # Includes
 ''' Inserir aqui includes dos scripts presentes na pasta includes '''
-execfile('includes/sort.py') 
-
-
+execfile('includes/sort.py')
+execfile('includes/delaunay.py')
+execfile('includes/validation.py')
 
 # Controle do tempo de exucucao
 ini = time.time()
@@ -79,64 +81,35 @@ if i == 1:
 	print "\n*** BIOSVD ***\nSyntax: \n\tpython biosvd.py \n\t\t-m  [model] \n\t\t-mt [model tabular file] \n\t\t-q  [query] \n\t\t-qt [query tabular file - optional]\n"
 	sys.exit()
 
-
 # Aqui comeca a magia
 print "\n*******************************"
 print "        *** BIOSVD ***"
 print "*******************************\n"
 
 
-# POG do THIAGO - modificar isso no futuro - gera os arquivos SeqModeloAgrupadas.fasta e SeqQueryAgrupadas.fasta
+# POG do THIAGO
 print "Sorting Seq"
-Sort(FileNomeModelo,FileNomeFamiliaModelo )
-#command = "python includes/sort.py %s %s %s %s" %(FileNomeModelo, FileNomeFamiliaModelo, FileNomeQuery, FileNomeFamiliaQuery) #arquivos devem estar no diretorio examples
-#os.system(command)
 
+# Numero de familas do modelo | Lista com todas as familias | Lista com a distruicao das Familias na lista | Lista com as sequencias do modelo
+NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo =  Sort(FileNomeModelo,FileNomeFamiliaModelo ).listas()
 
 # Clusterizacao 
-print "Starting clusterization"
-
-FileModelo = open("tmp/SeqModeloAgrupadas.fasta", 'rU')	#Contem as sequencias do modelo
-#FileQuery = open("tmp/SeqQueryAgrupadas.fasta", 'rU')	#Contem as sequencias das query
-
+print "Starting clusterization"	
 # Declaracoes iniciais de clusterizacao 
-FamiliasModelo = []
-DistribuicaFamiliasModelo = []
-NumFamiliasModelo = 0
+
 FamiliasQuery = []
 DistribuicaFamiliasQuery = []
 NumFamiliasQuery = 0
-NomesFamilias = []
 
-
-#Lendo cabecalho os arquivos
-NumFamiliasModelo = FileModelo.readline()
-#NumFamiliasQuery = FileQuery.readline()
-
-print "Reading header"
-i =0
-while( i< int(NumFamiliasModelo)):
-	temp = FileModelo.readline();
-	FamiliasModelo.append( temp.rstrip() )
-	temp = FileModelo.readline();
-	DistribuicaFamiliasModelo.append( temp.rstrip() )
-	i = i+1
 
 print "Parsing files"
 # Aqui faremos um PARSE dos arquivos .fasta para obter as sequencias a serem trabalhas
-sequenciasModelo = list(SeqIO.parse(FileModelo, "fasta"))
 sequenciasQuery = list(SeqIO.parse(FileQuery, "fasta"))
-
-FileModelo.close()
-
-#os.remove("tmp/SeqModeloAgrupadas.fasta")
-#os.remove("tmp/SeqQueryAgrupadas.fasta")
-
 
 tamanhosequenciasModelo = len(sequenciasModelo)
 tamanhosequenciasQuery = len(sequenciasQuery)
 NumroDeSequencias = tamanhosequenciasModelo + tamanhosequenciasQuery
-#print NumroDeSequencias
+
 
 aminoacidos = [ 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I','L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' ]
 KMERPADRAO = []
@@ -220,10 +193,11 @@ np.savetxt("results/Matriz1.txt", aux,fmt = '%.5f' ,delimiter = ';')
 print "Creating graphic 3D"
 
 # Salvando familias do modelo
-model = open("tmp/model.txt","w")
+#model = open("tmp/model.txt","w")
 F = {}
 tF = {}
 IDCor = 0
+temp = []
 
 print "Model"
 for i in range(len(DistribuicaFamiliasModelo)):
@@ -249,9 +223,10 @@ for i in range(len(DistribuicaFamiliasModelo)):
 	ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor])
 	IDCor = IDCor +1
 	#print F[FamiliasModelo[i]]
-	familia = "%s\n%s\n" %(FamiliasModelo[i],F[FamiliasModelo[i]])
-	model.write(familia)
-
+	#familia = "%s\n%s\n" %(FamiliasModelo[i],F[FamiliasModelo[i]])
+	#model.write(familia)
+	temp.append(FamiliasModelo[i])
+	temp.append(str(F[FamiliasModelo[i]]))
 	
 print "Query"
 tx = aux[0:1, tamanhosequenciasModelo -1: ]
@@ -260,10 +235,7 @@ tz = aux[2:3, tamanhosequenciasModelo -1: ]
 tF['Query family'] = str(tamanhosequenciasModelo-1)+":"+str(NumroDeSequencias )
 ax.scatter(tx, ty, tz, c='#000000', marker='*',label='Query')
 
-	#print tF[FamiliasModelo[i]]
-	#familia = "%s\n%s\n" %(FamiliasModelo[i],tF[FamiliasModelo[i]])
-	#model.write(familia)
-	
+
 # Criando figura
 plt.legend(loc='upper left', numpoints=1, ncol=3, fontsize=10, bbox_to_anchor=(0, 0))
 if(len(sys.argv) >= 10):
@@ -271,19 +243,20 @@ if(len(sys.argv) >= 10):
 	plt.close(fig1)
 else:
 	plt.show()
-model.close()
+#model.close()
 
 # Calculando delauney
-
 # POG DIEGO - modificar isso no futuro *************************************************************************
 print "Calculing delaunay"
-command = "python includes/delaunay.py" #envie X, Y, Z e F, alem das queries tX, tY, tZ e tF
-os.system(command)
+AplciarDelaunay( temp , aux)
+#command = "python includes/delaunay.py" #envie X, Y, Z e F, alem das queries tX, tY, tZ e tF
+#os.system(command)
 
 
 print "| Running validation | %s"  %FileNomeFamiliaQuery
-command = "python includes/validation.py %s"  %FileNomeFamiliaQuery #envia o valor de qt
-os.system(command)
+Validation(FileNomeFamiliaQuery)
+#command = "python includes/validation.py %s"  %FileNomeFamiliaQuery #envia o valor de qt
+#os.system(command)
 # FIM POG ******************************************************************************************************
 
 # Fim do tempo de execucao 

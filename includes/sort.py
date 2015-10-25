@@ -1,19 +1,19 @@
 #     Program: sort.py
 #    Function: ordena resultados
-# Description: eh incluido por biosvd.py
+# Description: Separa por familia as sequencias usada para SVD. Eh incluso no biosvd.py
 #      Author: Thiago da Silva Correia, Diego Mariano, Jose Renato Barroso, Raquel de Melo-Minardi
-#     Version: 3
+#     Version: 4
 
 
-from Bio import SeqIO
 class Sort(object):
-	
+	"""Sort families sequences; Imput: nameFileModelo nameFileModeloFamily"""
 	def __init__(self, nameFileModelo, nameFileModeloFamilia ):
 		FileModelo = open(nameFileModelo, 'rU')
 		FileModeloFamilia = open(nameFileModeloFamilia, 'rU')
-		FilseqModeloOrdenadas = open("tmp/SeqModeloAgrupadas.fasta", 'w')
-		self.FamiliasModelo=[]
+		#FilseqModeloOrdenadas = open("tmp/SeqModeloAgrupadas.fasta", 'w')
+		self.Todasfamilias=[]
 		self.distribuicaoFamiliasModelos = []
+		self.SequenciasOrdenadas=[]
 
 		print "sort.py: parsing"
 		# Aqui faremos um PARSE dos arquivos .fasta para obter as sequencias a serem trabalhas
@@ -22,7 +22,7 @@ class Sort(object):
 		FileModelo.close()
 
 		seqs = []
-		Todasfamilias = [] # Familias
+
 		FamiliaNaOrdem = [] #Ordem com que as familias aparecem no arquivo. (Com repeticao )
 
 		#Modelo
@@ -37,32 +37,36 @@ class Sort(object):
 			family = tempA[0].rstrip()[i:j-1]
 			if(len(family)>0):
 				FamiliaNaOrdem.append( family )
-				if family not in Todasfamilias:
-					Todasfamilias.append(family)
+				if family not in self.Todasfamilias:
+					self.Todasfamilias.append(family)
 			Aux = FileModeloFamilia.readline()
-		#if tempA[0].rstrip() not in Todasfamilias:
-		#	Todasfamilias.append(tempA[0].rstrip())
 	
 	
 		#Gravando o numero total de familas do Modelo
-		FilseqModeloOrdenadas.write(str(len(Todasfamilias))+'\n')
+		#FilseqModeloOrdenadas.write(str(len(self.Todasfamilias))+'\n')
+		#self.distribuicaoFamiliasModelos.append(str))
 		k = 0
-		for fam in Todasfamilias:
-			FilseqModeloOrdenadas.write(str(fam)+'\n')
+		for fam in self.Todasfamilias:
+			#FilseqModeloOrdenadas.write(str(fam)+'\n')
 			for i in range(len(FamiliaNaOrdem)):
 				if fam == FamiliaNaOrdem[i]:
 					k = k+1
 					seqs.append(i)
-			#SeqIO.write( sequenciasModelo[i], FilseqOrdenadas, "fasta")
-			FilseqModeloOrdenadas.write(str(k)+'\n')
+			#FilseqModeloOrdenadas.write(str(k)+'\n')
+			self.distribuicaoFamiliasModelos.append(k)
 		#print k
 
 		#gravando as sequenciasModelo no arquivo
 		for i in seqs:
-			SeqIO.write( sequenciasModelo[i], FilseqModeloOrdenadas, "fasta")
+			#SeqIO.write( sequenciasModelo[i], FilseqModeloOrdenadas, "fasta")
+			self.SequenciasOrdenadas.append(sequenciasModelo[i])
 
-		del FamiliaNaOrdem[:]
-		del Todasfamilias[:]
-		del seqs[:]
+		#del FamiliaNaOrdem[:]
+		#del Todasfamilias[:]
+		#del seqs[:]
 		FileModeloFamilia.close()
-		FilseqModeloOrdenadas.close()
+		#FilseqModeloOrdenadas.close()
+
+	def listas(self):
+		""" Return: Number of families. List of families names. List of the families distribution; List of sequences"""
+		return len(self.Todasfamilias) ,self.Todasfamilias , self.distribuicaoFamiliasModelos ,self.SequenciasOrdenadas
