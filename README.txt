@@ -25,4 +25,4 @@
 
 # Uso simples ******************************************
 
-python biosvd.py -m example/yes.fasta -mt example/yes.tab -q example/no.fasta -qt example/no.tab -g plotClus
+python example.py -m example/yes.fasta -mt example/yes.tab -q example/no.fasta -qt example/no.tab -g plotClus
