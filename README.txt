@@ -26,3 +26,6 @@
 # Uso simples ******************************************
 
 python example.py -m example/yes.fasta -mt example/yes.tab -q example/no.fasta -qt example/no.tab -g plotClus
+
+python Experimento.py -m Experimento/1000_v1.fasta -mt Experimento/tabular_v1.tab -g plotClus
+

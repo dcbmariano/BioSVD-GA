@@ -18,9 +18,6 @@
 
 
 # IMPORTS
-from Biosvd import validation as vd
-from Biosvd import AplciarDelaunay as dl
-from Biosvd import sort as st
 from Biosvd import biosvd as bs
 
 from mpl_toolkits.mplot3d import Axes3D
@@ -34,6 +31,116 @@ import time
 import sys
 import os
 from os import mkdir
+
+
+def CriarHashTab(nameFileTabFamily ):
+	HashTab = {}
+	Familias = []
+	FileTab = open(nameFileTabFamily, 'rU')
+
+	while True:
+		row = FileTab.readline().split('\t')
+		if len(row) == 1:
+			break
+		else:
+			HashTab[ row[0] ] =  row[1]
+			if row[1] not in Familias:
+				Familias.append(row[1])
+
+	FileTab.close()
+	return HashTab , Familias
+
+
+def Sort( sequenciasModelo, HashTabular ):
+
+	Todasfamilias=[] #Sem repeticao
+	distribuicaoFamiliasModelos = []
+	SequenciasOrdenadas=[]
+	FamiliaNaOrdem = [] #Ordem com que as familias aparecem no arquivo. (Com repeticao )
+	seqs = []
+	print "sort.py: parsing"
+
+	for seq in sequenciasModelo:
+		family = HashTabular.get(seq.id) 
+		if family is not None:
+			family = HashTabular.get(seq.id).rstrip() 
+			FamiliaNaOrdem.append( family )
+
+			if family not in Todasfamilias:
+				Todasfamilias.append(family )
+
+	k = -1
+	for fam in Todasfamilias:
+		for i in range(len(FamiliaNaOrdem)):
+			if fam == FamiliaNaOrdem[i]:
+				k = k+1
+				seqs.append(i)
+		distribuicaoFamiliasModelos.append(k)
+
+	#gravando as sequenciasModelo na lista
+	for i in seqs:
+		SequenciasOrdenadas.append(sequenciasModelo[i])
+
+	return len(Todasfamilias) ,Todasfamilias , distribuicaoFamiliasModelos , SequenciasOrdenadas
+
+
+
+
+
+def Validation( HashTab , SeqQuery):
+
+	filetab_prediction = open("./results/family_prediction.txt", "r")
+	predictionList = []	
+
+	tab_prediction = filetab_prediction.readline()
+	tab_prediction = filetab_prediction.readline()
+
+	while tab_prediction:
+		tab_prediction = tab_prediction.split('\t')
+		predictionList.append( tab_prediction[1] )
+
+		tab_prediction = filetab_prediction.readline()
+
+	acertos = 0
+	for i in range(len(SeqQuery)):
+		family = HashTab.get( SeqQuery[i].id )
+		#print family,predictionList[i]
+		if predictionList[i] == family:
+			acertos = acertos + 1
+
+	# Calculando o total de acertos
+	porcentagem = 100 * float(acertos) / float(len(predictionList))
+	print "%0.2f%% correct answers." %porcentagem
+	if int(porcentagem) > 60:
+		print ":)\n"
+	else: 
+		print ":(\n"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 os.system("clear")
 try:
@@ -93,9 +200,14 @@ print "*******************************\n"
 
 # POG do THIAGO
 print "Sorting Seq"
+sequenciasModelo = list(SeqIO.parse( open("./example/yes.fasta", "r")  , "fasta"))
+sequenciasQuery = list(SeqIO.parse( open("./example/n2.fasta", "r")  , "fasta"))
+
+HashTabular, Familias = CriarHashTab( "Tyes.tab" )
 
 # Numero de familas do modelo | Lista com todas as familias | Lista com a distruicao das Familias na lista | Lista com as sequencias do modelo
-NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo =  st.Sort(FileNomeModelo,FileNomeFamiliaModelo )
+NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo =  Sort(sequenciasModelo ,HashTabular )
+
 
 # Clusterizacao 
 print "Starting clusterization"	
@@ -135,7 +247,7 @@ for i in sequenciasQuery:
 	
 #Apagando as lista que nao serao mais usadas
 del sequenciasModelo[:]
-del sequenciasQuery[:]
+#del sequenciasQuery[:]
 
 #Preenchendo matriz de frequencia
 mat8000x200 = bs.Kmer( allSequences  ,3 )
@@ -230,13 +342,13 @@ else:
 # Calculando delauney
 # POG DIEGO - modificar isso no futuro *************************************************************************
 print "Calculing delaunay"
-dl.DDelaunay( temp , aux)
+bs.delaunay( temp , aux, sequenciasQuery )
 #command = "python includes/delaunay.py" #envie X, Y, Z e F, alem das queries tX, tY, tZ e tF
 #os.system(command)
 
 
 print "| Running validation | %s"  %FileNomeFamiliaQuery
-vd.Validation(FileNomeFamiliaQuery)
+Validation(HashTabular , sequenciasQuery)
 #command = "python includes/validation.py %s"  %FileNomeFamiliaQuery #envia o valor de qt
 #os.system(command)
 # FIM POG ******************************************************************************************************

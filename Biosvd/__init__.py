@@ -2,9 +2,6 @@
 # -*- coding: latin-1 -*-
 # Desenvolvimento Aberto
  
-__all__ = ['biosvd', 'validation', 'AplciarDelaunay', 'sort']
+__all__ = ['biosvd' ]
 # Importa pacote
 import biosvd
-import validation
-import AplciarDelaunay
-import sort
