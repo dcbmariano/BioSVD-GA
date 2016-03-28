@@ -92,6 +92,7 @@ NumroDeSequencias = numeroSeqModel + numeroSeqQuery
 
 #allSequences = sequenciasModelo + sequenciasQuery
 #Jutando todas as sequencias numa so lista
+allSequences = []
 for i in sequenciasModelo:
 	allSequences.append(i)
 for i in sequenciasQuery:
