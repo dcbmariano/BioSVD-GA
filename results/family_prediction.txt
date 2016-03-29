@@ -60,7 +60,7 @@ protein_id (query)	family predicted	family correct
 59	Glycosyl hydrolase 1	Glycosyl hydrolase 1
 60	Glycosyl hydrolase 1	Glycosyl hydrolase 1
 61	Glycosyl hydrolase 1	Glycosyl hydrolase 1
-62	Glycosyl hydrolase 31	Glycosyl hydrolase 1
+62	Glycosyl hydrolase 1	Glycosyl hydrolase 1
 63	Glycosyl hydrolase 1	Glycosyl hydrolase 1
 64	Glycosyl hydrolase 1	Glycosyl hydrolase 1
 65	Glycosyl hydrolase 1	Glycosyl hydrolase 1

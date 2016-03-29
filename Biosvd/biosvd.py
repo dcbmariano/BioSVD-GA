@@ -31,10 +31,11 @@ def SVD (  matriz , K ):
 
 	fig2 = plt.figure()
 	#Aqui limito os eixos X e Y do plot
-	plt.axis([0, 20, 0, 0.5])
+	plt.axis([0,  len(s), 0, 0.5])
 	plt.plot(SN.T)
-	fig2.savefig('results/posto.png', dpi=300)
-	plt.close(fig2)
+	#fig2.savefig('results/posto.png', dpi=300)
+	#plt.close(fig2)
+	plt.show()
 
 	return aux
  

@@ -121,7 +121,7 @@
 >position 275 [215:315]
 {'Glycosyl hydrolase 31': 0, 'Glycosyl hydrolase 3': 4, 'Glycosyl hydrolase 1': 16, 'Glycosyl hydrolase 17': 0}
 >position 276 [215:315]
-{'Glycosyl hydrolase 31': 0, 'Glycosyl hydrolase 3': 0, 'Glycosyl hydrolase 1': 0, 'Glycosyl hydrolase 17': 0}
+{'Glycosyl hydrolase 31': 0, 'Glycosyl hydrolase 3': 0, 'Glycosyl hydrolase 1': 12, 'Glycosyl hydrolase 17': 0}
 >position 277 [215:315]
 {'Glycosyl hydrolase 31': 0, 'Glycosyl hydrolase 3': 2, 'Glycosyl hydrolase 1': 20, 'Glycosyl hydrolase 17': 0}
 >position 278 [215:315]
