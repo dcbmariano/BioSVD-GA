@@ -3,7 +3,7 @@
 #    Function: Implementa o metodo de svd para classificacao de proteinas
 # Description: inclui: delaunay.py e sort.py - Por enquanto estamos limitado a 23 cores no plot assim so podemos ter 23 familas diferentes. Isso sera revisado(Por Thiago)
 #      Author: Thiago da Silva Correia, Diego Mariano, Jose Renato Barroso, Raquel Cardoso de Melo-Minardi
-#     Version: 7
+#     Version: 7.01
 
 
 # Hierarquia do programa ******************************************
@@ -20,8 +20,6 @@ from Biosvd import biosvd as bio
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import linalg as LA
 from Bio import SeqIO
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -82,7 +80,6 @@ sequenciasQuery = list(SeqIO.parse( open(FileQuery, "r")  , "fasta"))
 
 print "Model number sequence: %d \nQuery number sequence: %d" %( len(sequenciasModelo), len(sequenciasQuery) )
 
-
 print "Sorting Model Seq"
 NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo = bio.Sort( sequenciasModelo, hashTabModelo )
 
@@ -90,7 +87,7 @@ numeroSeqModel = len(sequenciasModelo)
 numeroSeqQuery = len(sequenciasQuery)
 NumroDeSequencias = numeroSeqModel + numeroSeqQuery
 
-#allSequences = sequenciasModelo + sequenciasQuery
+
 #Jutando todas as sequencias numa so lista
 allSequences = []
 for i in sequenciasModelo:
@@ -109,29 +106,9 @@ Cores = ['b', 'g', 'r', 'c','m','y', 'k', 'w', '#6A5ACD', '#C71585','#9932CC','#
 		'#008B8B','#00FF00','#B8860B','#E0FFFF','#DDA0DD' ,'#F08080' ,'#5F9EA0','#8FBC8F','#EEE8AA','#BC8F8F']
 
 print "SVD"
-U, s, V = LA.svd( matFrequencia )
-
-K = 3
-SK =  np.diag(s)
-
-#Normlizando a matriz S
-Temp = SK/np.sum(SK)
-SN = np.diag( Temp )
-
-SK = SK[0:K,0:K]
-Vaux = V.transpose()
-VK = Vaux[:,:K]
-aux = np.dot(SK , VK.transpose() )
+aux = bio.SVD( matFrequencia, 3 )
 
 print "Creating graphic 3D"
-
-
-fig2 = plt.figure()
-#Aqui limito os eixos X e Y do plot
-plt.axis([0, 20, 0, 0.5])
-plt.plot(SN.T)
-fig2.savefig('results/posto.png', dpi=300)
-plt.close(fig2)
 
 fig1 = plt.figure()
 ax = fig1.add_subplot(111, projection='3d')
@@ -162,18 +139,18 @@ for i in range(len(DistribuicaFamiliasModelo)):
 		z = aux[2:3,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
 		F[FamiliasModelo[i]] = str(int(DistribuicaFamiliasModelo[i-1]))+":"+str(int(DistribuicaFamiliasModelo[i]))
 
-	ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor])
+	ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor], s = 100 )
 	IDCor = IDCor +1
 	temp.append(FamiliasModelo[i])
 	temp.append(str(F[FamiliasModelo[i]]))
 
 	
 print "Query"
-tx = aux[0:1, numeroSeqModel -1: ]
-ty = aux[1:2, numeroSeqModel -1: ]
-tz = aux[2:3, numeroSeqModel -1: ]
-tF['Query family'] = str(numeroSeqModel-1)+":"+str(NumroDeSequencias )
-ax.scatter(tx, ty, tz, c='#000000', marker='*',label='Query')
+tx = aux[0:1, numeroSeqModel +1: ]
+ty = aux[1:2, numeroSeqModel +1: ]
+tz = aux[2:3, numeroSeqModel +1: ]
+tF['Query family'] = str(numeroSeqModel+1)+":"+str(NumroDeSequencias )
+ax.scatter(tx, ty, tz, c='#000000', marker='*',label='Query', s = 100 )
 
 	
 # Criando figura

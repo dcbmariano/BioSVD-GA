@@ -4,7 +4,7 @@
 #    Function: Implementa o metodo de svd para classificacao de proteinas
 # Description: inclui: delaunay.py e sort.py - Por enquanto estamos limitado a 23 cores no plot assim so podemos ter 23 familas diferentes. Isso sera revisado(Por Thiago)
 #      Author: Thiago da Silva Correia, Diego Mariano, Jose Renato Barroso, Raquel Cardoso de Melo-Minardi
-#     Version: 7
+#     Version: 7.01
 
 
 from numpy import linalg as LA
@@ -13,15 +13,30 @@ import itertools
 import numpy as np
 from scipy.spatial import Delaunay,distance
 import multiprocessing as mp
+import matplotlib.pyplot as plt
 import math
 import os
 from functools import partial
 import sys
 
-def SVD (  matriz ):
+def SVD (  matriz , K ):
 
 	U, s, V = LA.svd( matriz, full_matrices = True )
-	return U, s, V.transpose()
+	V = V.transpose()
+	S =  np.diag(s)
+	SN = s/np.sum(s)
+	SK = S[0:K,0:K]
+	VK = V[:,:K]
+	aux = np.dot(SK , VK.transpose() )
+
+	fig2 = plt.figure()
+	#Aqui limito os eixos X e Y do plot
+	plt.axis([0, 20, 0, 0.5])
+	plt.plot(SN.T)
+	fig2.savefig('results/posto.png', dpi=300)
+	plt.close(fig2)
+
+	return aux
  
 def Kmer( sequencias, k ):
 	print "Creating K-MERS"
@@ -121,7 +136,6 @@ def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey ):
 	# Inseriremos um elemento por vez na lista coord e calculamos o delauney - matriz x eh usada como exemplo
 	jend = len(x)
 
-	print ultimo_elemento_modelo, jend
 	for i in range(ultimo_elemento_modelo,jend):
 
 		# UM POR VEZ  
