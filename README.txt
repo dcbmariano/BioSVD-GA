@@ -21,8 +21,10 @@
 - m             Nome do arquivo modelo (formato fasta)
 - mt            Arquivo tabular para query (formato tab)
 - g             Salvar grafico (insira o nome do arquivo sem extensao)
+- p				Nome do arquivo para salvar o plot do posto da matriz(insira o nome do arquivo sem extensao)
+
 
 
 # Uso simples ******************************************
 
-python example.py -m example/yes.fasta -mt example/YES.tab -q example/no.fasta -qt example/NO.tab -g plotClus
+python example.py -m example/yes.fasta -mt example/YES.tab -q example/no.fasta -qt example/NO.tab -g plotClus -p plotPosto

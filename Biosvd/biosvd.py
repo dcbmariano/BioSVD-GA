@@ -19,7 +19,7 @@ import os
 from functools import partial
 import sys
 
-def SVD (  matriz , K ):
+def SVD (  matriz , K , namePlotPosto):
 
 	U, s, V = LA.svd( matriz, full_matrices = True )
 	V = V.transpose()
@@ -30,14 +30,17 @@ def SVD (  matriz , K ):
 	aux = np.dot(SK , VK.transpose() )
 
 	fig2 = plt.figure()
+	fig2.suptitle('Posto')
 	#Aqui limito os eixos X e Y do plot
 	plt.axis([0,  len(s), 0, 0.5])
 	plt.plot(SN.T)
-	#fig2.savefig('results/posto.png', dpi=300)
-	#plt.close(fig2)
-	plt.show()
+	if(len(namePlotPosto) >0):
+		fig2.savefig('results/'+namePlotPosto+'.png', dpi=300)
+		plt.close(fig2)
+	else:
+		plt.show()
 
-	return aux
+	return aux, U
  
 def Kmer( sequencias, k ):
 	print "Creating K-MERS"
