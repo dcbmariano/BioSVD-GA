@@ -79,7 +79,14 @@ print "\n*******************************"
 print "        *** BIOSVD ***"
 print "*******************************\n"
 
+seqmodel = list(SeqIO.parse( FileModelo , "fasta"))
+seqQuery = list(SeqIO.parse( FileQuery , "fasta"))
+matrizFrequencia = bio.Kmer( seqmodel +seqQuery , 3 )
+print "SVD"
+aux ,T= bio.SVD( matrizFrequencia, 3 , "plotRita" )
+sys.exit()
 
+'''
 A = np.zeros(shape=(10, 5))
 A[0] = [0, 0, 0, 1, 0]
 A[1] = [0, 0, 0, 0, 1]
@@ -94,6 +101,7 @@ A[9] = [0 ,1, 1, 0 ,0]
 
 q = np.zeros(shape=(1, 10 ))
 q[0]=[0, 0,0, 0, 0, 0, 0, 1, 1, 1]
+'''
 
 #SlateBlue, MediumVioletRed, DarkOrchid,DeepSkyBlue,DarkRed,OrangeRed,Teal,
 #Lime,DarkGoldenrod,PaleTurquoise,Plum,LightCoral,CadetBlue,DarkSeaGreen,PaleGoldenrod,RosyBrown

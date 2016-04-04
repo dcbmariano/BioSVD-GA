@@ -1,0 +1,436 @@
+::Teste 0
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_0	1	hydrolases	hydrolases
+1_0	0	oxireductases	hydrolases
+2_0	1	hydrolases	hydrolases
+3_0	1	hydrolases	hydrolases
+4_0	1	hydrolases	hydrolases
+5_0	1	hydrolases	hydrolases
+6_0	1	hydrolases	hydrolases
+7_0	0	lyases	hydrolases
+8_0	1	hydrolases	hydrolases
+9_0	1	hydrolases	hydrolases
+10_0	1	hydrolases	hydrolases
+11_0	1	hydrolases	hydrolases
+12_0	1	hydrolases	hydrolases
+13_0	1	hydrolases	hydrolases
+14_0	1	hydrolases	hydrolases
+15_0	1	hydrolases	hydrolases
+16_0	0	hydrolases	isomerases
+17_0	0	oxireductases	isomerases
+18_0	0	hydrolases	isomerases
+19_0	0	hydrolases	isomerases
+20_0	0	hydrolases	isomerases
+21_0	0	hydrolases	ligases
+22_0	0	hydrolases	ligases
+23_0	0	oxireductases	lyases
+24_0	0	hydrolases	lyases
+25_0	0	hydrolases	lyases
+26_0	0	hydrolases	lyases
+27_0	0	oxireductases	lyases
+28_0	0	oxireductases	lyases
+29_0	0	hydrolases	oxireductases
+30_0	0	hydrolases	oxireductases
+31_0	0	lyases	oxireductases
+32_0	0	hydrolases	oxireductases
+33_0	0	hydrolases	oxireductases
+34_0	0	hydrolases	oxireductases
+35_0	0	hydrolases	oxireductases
+36_0	0	hydrolases	oxireductases
+
+Acuracia do teste: 0.38
+
+--------------------------------------------------------------
+
+::Teste 1
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_1	1	hydrolases	hydrolases
+1_1	1	hydrolases	hydrolases
+2_1	1	hydrolases	hydrolases
+3_1	1	hydrolases	hydrolases
+4_1	1	hydrolases	hydrolases
+5_1	1	hydrolases	hydrolases
+6_1	1	hydrolases	hydrolases
+7_1	1	hydrolases	hydrolases
+8_1	1	hydrolases	hydrolases
+9_1	1	hydrolases	hydrolases
+10_1	1	hydrolases	hydrolases
+11_1	1	hydrolases	hydrolases
+12_1	0	oxireductases	hydrolases
+13_1	1	hydrolases	hydrolases
+14_1	1	hydrolases	hydrolases
+15_1	1	hydrolases	hydrolases
+16_1	0	hydrolases	isomerases
+17_1	0	oxireductases	isomerases
+18_1	0	oxireductases	isomerases
+19_1	0	lyases	isomerases
+20_1	0	hydrolases	isomerases
+21_1	0	oxireductases	ligases
+22_1	0	hydrolases	ligases
+23_1	0	hydrolases	lyases
+24_1	0	oxireductases	lyases
+25_1	0	hydrolases	lyases
+26_1	0	hydrolases	lyases
+27_1	0	hydrolases	lyases
+28_1	0	hydrolases	lyases
+29_1	0	lyases	oxireductases
+30_1	0	hydrolases	oxireductases
+31_1	0	lyases	oxireductases
+32_1	0	hydrolases	oxireductases
+33_1	0	isomerases	oxireductases
+34_1	0	hydrolases	oxireductases
+35_1	0	lyases	oxireductases
+36_1	0	lyases	oxireductases
+
+Acuracia do teste: 0.41
+
+--------------------------------------------------------------
+
+::Teste 2
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_2	1	hydrolases	hydrolases
+1_2	1	hydrolases	hydrolases
+2_2	1	hydrolases	hydrolases
+3_2	1	hydrolases	hydrolases
+4_2	0	oxireductases	hydrolases
+5_2	1	hydrolases	hydrolases
+6_2	1	hydrolases	hydrolases
+7_2	1	hydrolases	hydrolases
+8_2	1	hydrolases	hydrolases
+9_2	1	hydrolases	hydrolases
+10_2	1	hydrolases	hydrolases
+11_2	1	hydrolases	hydrolases
+12_2	1	hydrolases	hydrolases
+13_2	1	hydrolases	hydrolases
+14_2	1	hydrolases	hydrolases
+15_2	0	oxireductases	hydrolases
+16_2	0	hydrolases	isomerases
+17_2	0	hydrolases	isomerases
+18_2	0	hydrolases	isomerases
+19_2	0	hydrolases	isomerases
+20_2	0	hydrolases	isomerases
+21_2	0	lyases	ligases
+22_2	0	hydrolases	ligases
+23_2	0	hydrolases	lyases
+24_2	0	hydrolases	lyases
+25_2	0	oxireductases	lyases
+26_2	0	hydrolases	lyases
+27_2	0	hydrolases	lyases
+28_2	0	oxireductases	lyases
+29_2	1	oxireductases	oxireductases
+30_2	0	hydrolases	oxireductases
+31_2	1	oxireductases	oxireductases
+32_2	0	lyases	oxireductases
+33_2	0	hydrolases	oxireductases
+34_2	1	oxireductases	oxireductases
+35_2	0	hydrolases	oxireductases
+36_2	0	hydrolases	oxireductases
+
+Acuracia do teste: 0.46
+
+--------------------------------------------------------------
+
+::Teste 3
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_3	1	hydrolases	hydrolases
+1_3	1	hydrolases	hydrolases
+2_3	1	hydrolases	hydrolases
+3_3	1	hydrolases	hydrolases
+4_3	1	hydrolases	hydrolases
+5_3	1	hydrolases	hydrolases
+6_3	1	hydrolases	hydrolases
+7_3	1	hydrolases	hydrolases
+8_3	0	oxireductases	hydrolases
+9_3	1	hydrolases	hydrolases
+10_3	1	hydrolases	hydrolases
+11_3	0	oxireductases	hydrolases
+12_3	1	hydrolases	hydrolases
+13_3	1	hydrolases	hydrolases
+14_3	1	hydrolases	hydrolases
+15_3	1	hydrolases	hydrolases
+16_3	0	oxireductases	isomerases
+17_3	0	hydrolases	isomerases
+18_3	0	oxireductases	isomerases
+19_3	0	hydrolases	isomerases
+20_3	0	hydrolases	isomerases
+21_3	0	hydrolases	ligases
+22_3	0	hydrolases	ligases
+23_3	0	oxireductases	lyases
+24_3	0	hydrolases	lyases
+25_3	0	hydrolases	lyases
+26_3	1	lyases	lyases
+27_3	0	hydrolases	lyases
+28_3	0	hydrolases	lyases
+29_3	0	hydrolases	oxireductases
+30_3	0	hydrolases	oxireductases
+31_3	1	oxireductases	oxireductases
+32_3	0	hydrolases	oxireductases
+33_3	0	hydrolases	oxireductases
+34_3	0	hydrolases	oxireductases
+35_3	0	hydrolases	oxireductases
+
+Acuracia do teste: 0.44
+
+--------------------------------------------------------------
+
+::Teste 4
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_4	0	oxireductases	hydrolases
+1_4	1	hydrolases	hydrolases
+2_4	1	hydrolases	hydrolases
+3_4	1	hydrolases	hydrolases
+4_4	1	hydrolases	hydrolases
+5_4	1	hydrolases	hydrolases
+6_4	1	hydrolases	hydrolases
+7_4	1	hydrolases	hydrolases
+8_4	1	hydrolases	hydrolases
+9_4	1	hydrolases	hydrolases
+10_4	0	oxireductases	hydrolases
+11_4	0	oxireductases	hydrolases
+12_4	1	hydrolases	hydrolases
+13_4	1	hydrolases	hydrolases
+14_4	1	hydrolases	hydrolases
+15_4	1	hydrolases	hydrolases
+16_4	0	oxireductases	isomerases
+17_4	0	lyases	isomerases
+18_4	0	hydrolases	isomerases
+19_4	0	ligases	isomerases
+20_4	0	hydrolases	isomerases
+21_4	0	oxireductases	ligases
+22_4	0	hydrolases	ligases
+23_4	0	oxireductases	lyases
+24_4	0	oxireductases	lyases
+25_4	0	hydrolases	lyases
+26_4	0	oxireductases	lyases
+27_4	0	hydrolases	lyases
+28_4	0	hydrolases	lyases
+29_4	0	hydrolases	oxireductases
+30_4	0	hydrolases	oxireductases
+31_4	0	isomerases	oxireductases
+32_4	1	oxireductases	oxireductases
+33_4	0	hydrolases	oxireductases
+34_4	1	oxireductases	oxireductases
+35_4	1	oxireductases	oxireductases
+
+Acuracia do teste: 0.44
+
+--------------------------------------------------------------
+
+::Teste 5
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_5	1	hydrolases	hydrolases
+1_5	1	hydrolases	hydrolases
+2_5	1	hydrolases	hydrolases
+3_5	1	hydrolases	hydrolases
+4_5	1	hydrolases	hydrolases
+5_5	1	hydrolases	hydrolases
+6_5	1	hydrolases	hydrolases
+7_5	0	lyases	hydrolases
+8_5	0	lyases	hydrolases
+9_5	1	hydrolases	hydrolases
+10_5	0	oxireductases	hydrolases
+11_5	1	hydrolases	hydrolases
+12_5	0	lyases	hydrolases
+13_5	1	hydrolases	hydrolases
+14_5	1	hydrolases	hydrolases
+15_5	0	oxireductases	hydrolases
+16_5	0	oxireductases	isomerases
+17_5	0	hydrolases	isomerases
+18_5	0	hydrolases	isomerases
+19_5	0	oxireductases	isomerases
+20_5	0	oxireductases	isomerases
+21_5	0	oxireductases	ligases
+22_5	0	oxireductases	ligases
+23_5	0	hydrolases	lyases
+24_5	0	isomerases	lyases
+25_5	0	hydrolases	lyases
+26_5	0	oxireductases	lyases
+27_5	0	oxireductases	lyases
+28_5	0	oxireductases	lyases
+29_5	0	hydrolases	oxireductases
+30_5	0	hydrolases	oxireductases
+31_5	0	hydrolases	oxireductases
+32_5	1	oxireductases	oxireductases
+33_5	0	hydrolases	oxireductases
+34_5	1	oxireductases	oxireductases
+35_5	0	hydrolases	oxireductases
+
+Acuracia do teste: 0.36
+
+--------------------------------------------------------------
+
+::Teste 6
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_6	1	hydrolases	hydrolases
+1_6	0	oxireductases	hydrolases
+2_6	1	hydrolases	hydrolases
+3_6	1	hydrolases	hydrolases
+4_6	1	hydrolases	hydrolases
+5_6	1	hydrolases	hydrolases
+6_6	1	hydrolases	hydrolases
+7_6	1	hydrolases	hydrolases
+8_6	1	hydrolases	hydrolases
+9_6	1	hydrolases	hydrolases
+10_6	1	hydrolases	hydrolases
+11_6	1	hydrolases	hydrolases
+12_6	0	oxireductases	hydrolases
+13_6	1	hydrolases	hydrolases
+14_6	1	hydrolases	hydrolases
+15_6	1	hydrolases	hydrolases
+16_6	0	hydrolases	isomerases
+17_6	0	hydrolases	isomerases
+18_6	0	hydrolases	isomerases
+19_6	0	hydrolases	isomerases
+20_6	0	hydrolases	isomerases
+21_6	0	isomerases	ligases
+22_6	0	oxireductases	lyases
+23_6	0	hydrolases	lyases
+24_6	0	hydrolases	lyases
+25_6	0	hydrolases	lyases
+26_6	0	hydrolases	lyases
+27_6	0	hydrolases	lyases
+28_6	0	hydrolases	oxireductases
+29_6	1	oxireductases	oxireductases
+30_6	0	lyases	oxireductases
+31_6	1	oxireductases	oxireductases
+32_6	0	hydrolases	oxireductases
+33_6	0	hydrolases	oxireductases
+34_6	1	oxireductases	oxireductases
+35_6	0	isomerases	oxireductases
+
+Acuracia do teste: 0.47
+
+--------------------------------------------------------------
+
+::Teste 7
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_7	1	hydrolases	hydrolases
+1_7	1	hydrolases	hydrolases
+2_7	1	hydrolases	hydrolases
+3_7	1	hydrolases	hydrolases
+4_7	1	hydrolases	hydrolases
+5_7	1	hydrolases	hydrolases
+6_7	0	oxireductases	hydrolases
+7_7	1	hydrolases	hydrolases
+8_7	1	hydrolases	hydrolases
+9_7	0	isomerases	hydrolases
+10_7	1	hydrolases	hydrolases
+11_7	1	hydrolases	hydrolases
+12_7	1	hydrolases	hydrolases
+13_7	1	hydrolases	hydrolases
+14_7	1	hydrolases	hydrolases
+15_7	0	hydrolases	isomerases
+16_7	0	hydrolases	isomerases
+17_7	0	oxireductases	isomerases
+18_7	0	hydrolases	isomerases
+19_7	0	hydrolases	isomerases
+20_7	0	hydrolases	isomerases
+21_7	0	hydrolases	ligases
+22_7	0	oxireductases	lyases
+23_7	0	hydrolases	lyases
+24_7	0	hydrolases	lyases
+25_7	0	oxireductases	lyases
+26_7	0	hydrolases	lyases
+27_7	0	hydrolases	lyases
+28_7	1	oxireductases	oxireductases
+29_7	1	oxireductases	oxireductases
+30_7	1	oxireductases	oxireductases
+31_7	1	oxireductases	oxireductases
+32_7	1	oxireductases	oxireductases
+33_7	0	hydrolases	oxireductases
+34_7	1	oxireductases	oxireductases
+35_7	0	lyases	oxireductases
+
+Acuracia do teste: 0.53
+
+--------------------------------------------------------------
+
+::Teste 8
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_8	1	hydrolases	hydrolases
+1_8	0	oxireductases	hydrolases
+2_8	0	oxireductases	hydrolases
+3_8	1	hydrolases	hydrolases
+4_8	1	hydrolases	hydrolases
+5_8	0	lyases	hydrolases
+6_8	1	hydrolases	hydrolases
+7_8	1	hydrolases	hydrolases
+8_8	1	hydrolases	hydrolases
+9_8	0	oxireductases	hydrolases
+10_8	1	hydrolases	hydrolases
+11_8	1	hydrolases	hydrolases
+12_8	0	lyases	hydrolases
+13_8	1	hydrolases	hydrolases
+14_8	0	lyases	hydrolases
+15_8	0	hydrolases	isomerases
+16_8	0	hydrolases	isomerases
+17_8	0	hydrolases	isomerases
+18_8	0	hydrolases	isomerases
+19_8	0	hydrolases	isomerases
+20_8	0	oxireductases	ligases
+21_8	0	oxireductases	ligases
+22_8	0	hydrolases	lyases
+23_8	0	hydrolases	lyases
+24_8	0	hydrolases	lyases
+25_8	0	hydrolases	lyases
+26_8	0	hydrolases	lyases
+27_8	0	hydrolases	lyases
+28_8	0	hydrolases	oxireductases
+29_8	0	hydrolases	oxireductases
+30_8	0	hydrolases	oxireductases
+31_8	0	hydrolases	oxireductases
+32_8	0	lyases	oxireductases
+33_8	1	oxireductases	oxireductases
+34_8	1	oxireductases	oxireductases
+35_8	0	lyases	oxireductases
+
+Acuracia do teste: 0.31
+
+--------------------------------------------------------------
+
+::Teste 9
+Proteina_Grupo	Acerto	Predicao	Original	Votos
+0_9	1	hydrolases	hydrolases
+1_9	1	hydrolases	hydrolases
+2_9	1	hydrolases	hydrolases
+3_9	1	hydrolases	hydrolases
+4_9	1	hydrolases	hydrolases
+5_9	1	hydrolases	hydrolases
+6_9	1	hydrolases	hydrolases
+7_9	1	hydrolases	hydrolases
+8_9	1	hydrolases	hydrolases
+9_9	1	hydrolases	hydrolases
+10_9	1	hydrolases	hydrolases
+11_9	1	hydrolases	hydrolases
+12_9	1	hydrolases	hydrolases
+13_9	1	hydrolases	hydrolases
+14_9	1	hydrolases	hydrolases
+15_9	0	oxireductases	isomerases
+16_9	0	hydrolases	isomerases
+17_9	0	hydrolases	isomerases
+18_9	0	hydrolases	isomerases
+19_9	0	hydrolases	isomerases
+20_9	0	oxireductases	ligases
+21_9	0	hydrolases	ligases
+22_9	0	hydrolases	lyases
+23_9	0	oxireductases	lyases
+24_9	0	oxireductases	lyases
+25_9	0	hydrolases	lyases
+26_9	0	hydrolases	lyases
+27_9	0	oxireductases	lyases
+28_9	0	hydrolases	oxireductases
+29_9	1	oxireductases	oxireductases
+30_9	1	oxireductases	oxireductases
+31_9	0	hydrolases	oxireductases
+32_9	1	oxireductases	oxireductases
+33_9	0	hydrolases	oxireductases
+34_9	0	hydrolases	oxireductases
+35_9	1	oxireductases	oxireductases
+
+Acuracia do teste: 0.53
+
+--------------------------------------------------------------
+
+
+Acuracia media: 0.43
+

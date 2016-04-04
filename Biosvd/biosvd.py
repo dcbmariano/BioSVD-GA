@@ -8,6 +8,7 @@
 
 
 from numpy import linalg as LA
+from scipy.sparse.linalg import svds
 from Bio import SeqIO
 import itertools
 import numpy as np
@@ -17,29 +18,20 @@ import matplotlib.pyplot as plt
 import math
 import os
 from functools import partial
+from random import *
 import sys
 
 def SVD (  matriz , K , namePlotPosto):
 
-	U, s, V = LA.svd( matriz, full_matrices = True )
+	U, s, V = svds( matriz )
 	V = V.transpose()
-	S =  np.diag(s)
-	SN = s/np.sum(s)
+	tam = len(s)
+	s[:] =  s[::-1] #Ordenando de forma decrescente
+	S = np.diag(s)	#Criando a matrix S cuja colunas sao formandas pelo vetor s
 	SK = S[0:K,0:K]
 	VK = V[:,:K]
 	aux = np.dot(SK , VK.transpose() )
-
-	fig2 = plt.figure()
-	fig2.suptitle('Posto')
-	#Aqui limito os eixos X e Y do plot
-	plt.axis([0,  len(s), 0, 0.5])
-	plt.plot(SN.T)
-	if(len(namePlotPosto) >0):
-		fig2.savefig('results/'+namePlotPosto+'.png', dpi=300)
-		plt.close(fig2)
-	else:
-		plt.show()
-
+	Posto( s,namePlotPosto )
 	return aux, U
  
 def Kmer( sequencias, k ):
@@ -69,39 +61,24 @@ def Kmer( sequencias, k ):
 
 	return matFrequencia
 
+#Para exibir o posto para passar o namePlotPosto vazio
+def Posto( vetorS , namePlotPosto ):
+	S = vetorS*(1/np.sum(vetorS))	#Dividindo pela soma do vetor s
+	fig2 = plt.figure()
+	fig2.suptitle('Posto')
+	#Aqui limito os eixos X e Y do plot
+	#plt.axis([0, tam , 0, 0.5])
+	plt.plot(S)
+	if(len(namePlotPosto) >0):
+		fig2.savefig('results/'+namePlotPosto+'.png', dpi=300)
+		plt.close(fig2)
+	else:
+		plt.show()
 
-#Retorna onde ocorre a maior variacao dos elementos da diagonal da matriz S
-def Posto( matrizS ):
-	p = 1
-	S =  np.diag(matrizS)
 
-	#Normlizando a matriz S
-	Temp = S/np.linalg.norm(S)
-	SN = np.diag( Temp ) # matriz normalizada
-
-	
-	
-	Delta = SN[1] - SN[0]
-	
-	if Delta < 0:
-		Delta = -1* Delta
-	#print Delta
-
-	for i in range( len(SN) -1 ):
-		temp = SN[i+1] - SN[i]
-		if temp < 0:
-			temp = -1* temp
-
-		#print temp
-
-		if temp > Delta:
-			p = i+1
-			Delta = temp
-
-	return p
-
-def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey ):
+def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey):
 	# definindo familias
+	opcao_entrada = '-A'
 	f = {}
 	for i in range(len(familias_modelo)):
 		if i % 2 == 0:
@@ -202,7 +179,10 @@ def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey ):
 		  
 		# calcula o id da protein removendo a quantidade do modelo
 		protein_id = i - ultimo_elemento_modelo + 1
-		ID = sequenciasQuery[protein_id-1].id.split("|")[2]
+		if opcao_entrada ==  '-A':
+			ID = sequenciasQuery[protein_id-1].id.split("|")[2]
+		else:
+			ID = sequenciasQuery[protein_id-1].id
 		family_correct = HastabularQuey.get(ID)
 		final = "%d\t%s\t%s\n" %(protein_id, familia_atual, str(family_correct))
 		#temp = 	"%s\t%s\n" %(str(sequenciasQuery[protein_id-1].id),familia_atual)
@@ -217,9 +197,10 @@ def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey ):
 
 
 
-def Validation( HashTab , SeqQuery):
+def Validation( HashTab , SeqQuery ):
 	filetab_prediction = open("./results/family_prediction.txt", "r")
 	predictionList = []	
+	opcao_entrada = '-A'
 
 	tab_prediction = filetab_prediction.readline()
 	tab_prediction = filetab_prediction.readline()
@@ -232,30 +213,37 @@ def Validation( HashTab , SeqQuery):
 
 	acertos = 0
 	proteinas_sem_familias = 0
+	erros = 0
 	for i in range(len(SeqQuery)):
-		ID = SeqQuery[i].id.split("|")[2]
+		if opcao_entrada ==  '-A':
+			ID = SeqQuery[i].id.split("|")[2]
+		else:
+			ID = SeqQuery[i].id
 		family = HashTab.get(ID)
 		if family is not None:
 			family = family.rstrip()
 		
-			if predictionList[i] == family:
+			if i <len(predictionList) and predictionList[i] == family:
 				acertos = acertos + 1
+			else:
+				erros = erros +1
 		else:
 			proteinas_sem_familias = proteinas_sem_familias + 1
 
 	# Calculando o total de acertos
-	porcentagem = 100 * float(acertos) / float(len(predictionList) - proteinas_sem_familias )
+	porcentagem = 100*float(acertos) / float(len(predictionList) - proteinas_sem_familias )
 	print "%0.2f%% correct answers." %porcentagem
 	if int(porcentagem) > 60:
 		print ":)\n"
 	else: 
 		print ":(\n"
+	return acertos,erros
 
 
 
 #Agrupa as sequencias por familia
 def Sort( sequenciasModelo, HashTabular ):
-
+	opcao_entrada= '-A'
 	Todasfamilias=[] #Sem repeticao
 	distribuicaoFamiliasModelos = []
 	SequenciasOrdenadas=[]
@@ -263,7 +251,10 @@ def Sort( sequenciasModelo, HashTabular ):
 	seqs = []
 
 	for seq in sequenciasModelo:
-		ID = seq.id.split("|")[2]
+		if opcao_entrada =='-A':
+			ID = seq.id.split("|")[2]
+		else:
+			ID = seq.id
 		family = HashTabular.get(ID)
 		if family is not None:
 			family = family.rstrip() 
@@ -357,3 +348,146 @@ def DistanciaEuclidina(matPositionModel ,matPositionQuery, NumroDeSequenciasQuer
 		family_predicted[ IDQuery  ] = IDpredicted #ID da query / ID da familia predicted
 
 	return family_predicted
+
+
+def CrossValidation( sequencias, hashTab , kfold ):
+
+	'''
+	temp = []
+	while len(temp) < 1000:
+		try:
+			i =randint(0, len(sequencias))
+			temp.append(sequencias[i])
+			del sequencias[i]
+		except:
+			print ""
+
+	sequencias = temp
+	print "TAMANHO SEQ: ", len(sequencias)
+	'''
+	numeroSequencias = len(sequencias)
+	numero_Seq_por_grupos= numeroSequencias/kfold
+	ruido = 0.0
+	
+
+	#SlateBlue, MediumVioletRed, DarkOrchid,DeepSkyBlue,DarkRed,OrangeRed,Teal,
+	#Lime,DarkGoldenrod,PaleTurquoise,Plum,LightCoral,CadetBlue,DarkSeaGreen,PaleGoldenrod,RosyBrown
+	Cores = ['b', 'g', 'r', 'c','m','y', 'k', 'w', '#6A5ACD', '#C71585','#9932CC','#8B0000','#FF4500',
+	'#008B8B','#00FF00','#B8860B','#E0FFFF','#DDA0DD' ,'#F08080' ,'#5F9EA0','#8FBC8F','#EEE8AA','#BC8F8F']
+
+	#Caso o numero de sequencias nao seja multiplo do numero numero_Seq_por_grupos * kfold
+	#As ultima sequencias serao ignoradas
+
+	print "Creating K-fold"
+	for j in range( kfold ):
+		print j
+		seq = []
+		while len(seq) < numero_Seq_por_grupos :
+			try:
+				i =randint(0, len(sequencias))
+				seq.append(sequencias[i])
+				del sequencias[i]
+			except:
+				print ""
+		SeqIO.write(seq, open("./results/grupo"+str(j)+".fasta", "w"), "fasta")
+		del seq[:]
+	'''
+	print "number sequence: %d \nk-fold: %d\nsequences by groups: %d" %( len(sequencias), kfold, numero_Seq_por_grupos)
+
+	# Aqui vamos seperar as sequencias modelo e as Query
+	for i in range(numero_Seq_por_grupos ):
+		nomePlotClusterizacao = "Clust Group: " + str(i)
+		print "Grupo: %d" %int(i+1)
+
+		print "Sorting Model Seq"
+		sequenciasModel = sequencias[-numero_Seq_por_grupos:]
+		NumFamiliasModelo,FamiliasModelo,DistribuicaFamiliasModelo,sequenciasModel=Sort( sequenciasModel ,hashTab)
+
+		#Preenchendo matriz de frequencia
+		matFrequencia = Kmer( sequencias  ,3 )
+		print "Length of the matrix: ",matFrequencia.shape
+		print "SVD"
+		aux ,T = SVD( matFrequencia, 3 , "Posto Grupos "+str(i) )
+
+		numeroSeqModel = len(sequenciasModel)
+
+		print "Creating graphic 3D"
+
+		fig1 = plt.figure()
+		ax = fig1.add_subplot(111, projection='3d')
+
+		F = {}
+		tF = {}
+		IDCor = 0
+		temp = []
+
+
+		#print "Model"
+		for l in range(len(DistribuicaFamiliasModelo)):
+			if l == 0:#Primeira Familia Modelo
+				x = aux[0:1,0:int(DistribuicaFamiliasModelo[0]) ]
+				y = aux[1:2,0:int(DistribuicaFamiliasModelo[0]) ]
+				z = aux[2:3,0:int(DistribuicaFamiliasModelo[0]) ]
+				F[FamiliasModelo[l]] = "0:"+str(int(DistribuicaFamiliasModelo[0]) )
+		
+			elif(l == len(DistribuicaFamiliasModelo)-1 ):#Ultima familia Modelo
+	
+				x = aux[0:1,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
+				y = aux[1:2,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
+				z = aux[2:3,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
+				F[FamiliasModelo[l]] = str(int(DistribuicaFamiliasModelo[l-1]) ) + ":" + str(numeroSeqModel)
+		
+			else:
+				x = aux[0:1,int(DistribuicaFamiliasModelo[l-1]) :int(DistribuicaFamiliasModelo[l]) ]
+				y = aux[1:2,int(DistribuicaFamiliasModelo[l-1]) :int(DistribuicaFamiliasModelo[l]) ]
+				z = aux[2:3,int(DistribuicaFamiliasModelo[l-1]) :int(DistribuicaFamiliasModelo[l]) ]
+				F[FamiliasModelo[l]] = str(int(DistribuicaFamiliasModelo[l-1]))+":"+str(int(DistribuicaFamiliasModelo[l]))
+
+			ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor], s = 100 )
+			IDCor = IDCor +1
+			temp.append(FamiliasModelo[l])
+			temp.append(str(F[FamiliasModelo[l]]))
+
+	
+		#print "Query"
+		tx = aux[0:1, numeroSeqModel +1: ]
+		ty = aux[1:2, numeroSeqModel +1: ]
+		tz = aux[2:3, numeroSeqModel +1: ]
+		tF['Query family'] = str(numeroSeqModel+1)+":"+str(numeroSequencias )
+		ax.scatter(tx, ty, tz, c='#000000', marker='*',label='Query', s = 100 )
+
+		# Criando figura
+		plt.legend(loc='upper left', numpoints=1, ncol=3, fontsize=10, bbox_to_anchor=(0, 0))
+		if(len(nomePlotClusterizacao) > 0):
+			fig1.savefig('results/'+nomePlotClusterizacao+'Grupo'+str(i) +'.png', dpi=300)
+			plt.close(fig1)
+		else:
+			plt.show()
+
+		# Calculando delauney
+		sequenciasQuery = sequencias[0:-numero_Seq_por_grupos]
+		print "ABBBBBBBBBBBBBB:",len(sequenciasQuery)
+		#print "Calculing delaunay"
+		delaunay( temp, aux , sequenciasQuery, hashTab )
+
+		#print "| Running validation |" 
+		ruido = (1 - Validation( hashTab, sequenciasQuery) ) + ruido
+
+		seqTemp = sequencias[ 0:numero_Seq_por_grupos ]
+		del sequencias[ 0:numero_Seq_por_grupos ]
+		sequencias = sequencias + seqTemp
+
+	print "AC: " ,float(ruido/numeroSequencias)
+
+
+	return'''
+
+
+
+
+
+
+
+
+
+

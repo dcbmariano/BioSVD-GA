@@ -175,7 +175,7 @@ print "Calculing delaunay"
 bio.delaunay( temp, aux , sequenciasQuery, hashTabQuery)
 
 print "| Running validation | %s"  %FileQueryTabular
-bio.Validation( hashTabQuery, sequenciasQuery)
+A = bio.Validation( hashTabQuery, sequenciasQuery)
 
 # Fim do tempo de execucao 
 fim = time.time()
