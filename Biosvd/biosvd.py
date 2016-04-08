@@ -76,9 +76,8 @@ def Posto( vetorS , namePlotPosto ):
 		plt.show()
 
 
-def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey):
+def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey, opcao_entrada ):
 	# definindo familias
-	opcao_entrada = '-A'
 	f = {}
 	for i in range(len(familias_modelo)):
 		if i % 2 == 0:
@@ -191,16 +190,14 @@ def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey):
 
 	fr.close()
 	report.close()
-
 	print "\n****************************************************** \nSuccess! \nResults at: '/results/family_prediction.txt'.\n******************************************************\n"
 
 
 
 
-def Validation( HashTab , SeqQuery ):
+def Validation( HashTab , SeqQuery, opcao_entrada ):
 	filetab_prediction = open("./results/family_prediction.txt", "r")
-	predictionList = []	
-	opcao_entrada = '-A'
+	predictionList = []
 
 	tab_prediction = filetab_prediction.readline()
 	tab_prediction = filetab_prediction.readline()
@@ -242,8 +239,7 @@ def Validation( HashTab , SeqQuery ):
 
 
 #Agrupa as sequencias por familia
-def Sort( sequenciasModelo, HashTabular ):
-	opcao_entrada= '-A'
+def Sort( sequenciasModelo, HashTabular, opcao_entrada ):
 	Todasfamilias=[] #Sem repeticao
 	distribuicaoFamiliasModelos = []
 	SequenciasOrdenadas=[]

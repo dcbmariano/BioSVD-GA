@@ -40,8 +40,16 @@ kfold = 0
 
 opcao_entrada =  sys.argv[1]
 
-if opcao_entrada == '-B':
-	kfold = int(sys.argv[3] )
+while opcao_entrada == '-B' and i< 8:
+	if( sys.argv[i] == '-g'):
+		nomePlotClusterizacao = sys.argv[i+1]
+
+	if( sys.argv[i] == '-p'):
+		nomePlotPosto = sys.argv[i+1]
+
+	if( sys.argv[i] == '-k'):
+		kfold = int(sys.argv[i+1])
+	i = i+2
 
 
 while opcao_entrada == '-A' and i < (len(sys.argv)):
@@ -92,11 +100,11 @@ if opcao_entrada == '-A':
 	hashTab, FamiliasModelo = bio.CriarHashTab(FileTabular)
 	allSequences = list(SeqIO.parse( FileSequencias , "fasta"))
 else:
-	for j in range(len(sys.argv)-4):
-		seqtemp = list(SeqIO.parse( sys.argv[j+4], "fasta"))
+	for j in range(i,len(sys.argv)):
+		seqtemp = list(SeqIO.parse( sys.argv[j], "fasta"))
 		allSequences = allSequences + seqtemp
 		for p in seqtemp:
-			hashTab[ p.id ] = sys.argv[j+4].split('.')[0]
+			hashTab[ p.id ] = sys.argv[j].split('.')[0]
 
 acertos = 0
 erros =0
@@ -120,9 +128,9 @@ for j in range( kfold ):
 
 l=0
 Allgrups = listSequencias[:]
-
+print '\n'
 for sequenciasModelo in Allgrups:
-	print "Grupo: %d" % l
+	print "Grupo: %d" % (l+1)
 	nomePlotPosto ="posto%d" % l
 	nomePlotClusterizacao="Clus%d" % l
 	l = l +1

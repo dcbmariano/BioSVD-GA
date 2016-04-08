@@ -27,4 +27,12 @@
 
 # Uso simples ******************************************
 
-python example.py -m example/yes.fasta -mt example/YES.tab -q example/no.fasta -qt example/NO.tab -g plotClus -p plotPosto
+Para rodar o script sem a vaildacao cruzada
+python example.py -A -m example/yes.fasta -mt example/YES.tab -q example/no.fasta -qt example/NO.tab -g plotClus -p plotPosto
+
+Para rodar o script com a validaao cruzada
+Opcao de entrada 1
+python Cross.py -A -k 10 -m example/yes.fasta -mt example/YES.tab -q example/no.fasta -qt example/NO.tab -g plotClus -p plotPosto
+
+Opcao de entrada 2
+python Cross.py -B -g plotClus -p plotPosto -k Kfold [arquivos fasta ] 

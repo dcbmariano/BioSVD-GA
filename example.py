@@ -36,7 +36,12 @@ i = 1
 nomePlotClusterizacao = ''
 nomePlotPosto = ''
 
-while i < (len(sys.argv)):
+opcao_entrada =  sys.argv[1]
+
+if opcao_entrada == '-B':
+	kfold = int(sys.argv[3] )
+
+while opcao_entrada == '-A' and i < (len(sys.argv)):
 
 	# m = modelo
 	if( sys.argv[i] == '-m'):
@@ -90,7 +95,7 @@ sequenciasQuery = list(SeqIO.parse( open(FileQuery, "r")  , "fasta"))
 print "Model number sequence: %d \nQuery number sequence: %d" %( len(sequenciasModelo), len(sequenciasQuery) )
 
 print "Sorting Model Seq"
-NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo = bio.Sort( sequenciasModelo, hashTabModelo )
+NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo = bio.Sort( sequenciasModelo, hashTabModelo,opcao_entrada )
 
 numeroSeqModel = len(sequenciasModelo)
 numeroSeqQuery = len(sequenciasQuery)
@@ -172,10 +177,10 @@ else:
 
 # Calculando delauney
 print "Calculing delaunay"
-bio.delaunay( temp, aux , sequenciasQuery, hashTabQuery)
+bio.delaunay( temp, aux , sequenciasQuery, hashTabQuery,opcao_entrada)
 
 print "| Running validation | %s"  %FileQueryTabular
-A = bio.Validation( hashTabQuery, sequenciasQuery)
+A = bio.Validation( hashTabQuery, sequenciasQuery, opcao_entrada)
 
 # Fim do tempo de execucao 
 fim = time.time()
