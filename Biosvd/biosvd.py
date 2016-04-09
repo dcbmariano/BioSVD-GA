@@ -346,69 +346,65 @@ def DistanciaEuclidina(matPositionModel ,matPositionQuery, NumroDeSequenciasQuer
 	return family_predicted
 
 
-def CrossValidation( sequencias, hashTab , kfold ):
+def CrossValidation( allSequences, kfold ,hashTab ,opcao_entrada):
 
-	'''
-	temp = []
-	while len(temp) < 1000:
-		try:
-			i =randint(0, len(sequencias))
-			temp.append(sequencias[i])
-			del sequencias[i]
-		except:
-			print ""
-
-	sequencias = temp
-	print "TAMANHO SEQ: ", len(sequencias)
-	'''
-	numeroSequencias = len(sequencias)
+	acertos = 0
+	erros =0
+	numeroSequencias = len(allSequences)
 	numero_Seq_por_grupos= numeroSequencias/kfold
-	ruido = 0.0
-	
-
-	#SlateBlue, MediumVioletRed, DarkOrchid,DeepSkyBlue,DarkRed,OrangeRed,Teal,
-	#Lime,DarkGoldenrod,PaleTurquoise,Plum,LightCoral,CadetBlue,DarkSeaGreen,PaleGoldenrod,RosyBrown
-	Cores = ['b', 'g', 'r', 'c','m','y', 'k', 'w', '#6A5ACD', '#C71585','#9932CC','#8B0000','#FF4500',
-	'#008B8B','#00FF00','#B8860B','#E0FFFF','#DDA0DD' ,'#F08080' ,'#5F9EA0','#8FBC8F','#EEE8AA','#BC8F8F']
-
-	#Caso o numero de sequencias nao seja multiplo do numero numero_Seq_por_grupos * kfold
-	#As ultima sequencias serao ignoradas
+	numeroSeqModel = numero_Seq_por_grupos
+	listSequencias = [] #Contem o Kfold grupos de sequencias. cada grupo tem o mesmo numero de sequencias
 
 	print "Creating K-fold"
 	for j in range( kfold ):
-		print j
 		seq = []
 		while len(seq) < numero_Seq_por_grupos :
 			try:
-				i =randint(0, len(sequencias))
-				seq.append(sequencias[i])
-				del sequencias[i]
+				i =randint(0, len(allSequences))
+				seq.append(allSequences[i])
+				del allSequences[i]
 			except:
-				print ""
-		SeqIO.write(seq, open("./results/grupo"+str(j)+".fasta", "w"), "fasta")
+				PO = 0
+		listSequencias.append(seq[:])
 		del seq[:]
-	'''
-	print "number sequence: %d \nk-fold: %d\nsequences by groups: %d" %( len(sequencias), kfold, numero_Seq_por_grupos)
 
-	# Aqui vamos seperar as sequencias modelo e as Query
-	for i in range(numero_Seq_por_grupos ):
-		nomePlotClusterizacao = "Clust Group: " + str(i)
-		print "Grupo: %d" %int(i+1)
+	l=0
+	Allgrups = listSequencias[:]
+	print '\n'
+	for sequenciasModelo in Allgrups:
+		print "Grupo: %d" % (l+1)
+		nomePlotPosto ="posto%d" % l
+		nomePlotClusterizacao="Clus%d" % l
+		l = l +1
 
-		print "Sorting Model Seq"
-		sequenciasModel = sequencias[-numero_Seq_por_grupos:]
-		NumFamiliasModelo,FamiliasModelo,DistribuicaFamiliasModelo,sequenciasModel=Sort( sequenciasModel ,hashTab)
+		listSequencias.remove(sequenciasModelo) #Removendo o grupo de sequencias que sera o modelo
+		sequenciasQuery = []
+		for aux in listSequencias:
+			sequenciasQuery = sequenciasQuery + aux
+
+		numeroSeqQuery = len(sequenciasQuery)
+		NumroDeSequencias = numeroSeqModel + numeroSeqQuery
+		listSequencias.append(sequenciasModelo)
+		print "Sorting Seq"
+		# Numero de familas do modelo | Lista com todas as familias sem repeticao | Lista com a distruicao das Familias na lista | Lista com as sequencias do modelo
+
+		NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo =  Sort( sequenciasModelo, hashTab ,opcao_entrada )
+
+		print "Model lenth: %d\nQuery lenth %d:\n" % (numeroSeqModel, numeroSeqQuery )
 
 		#Preenchendo matriz de frequencia
-		matFrequencia = Kmer( sequencias  ,3 )
-		print "Length of the matrix: ",matFrequencia.shape
-		print "SVD"
-		aux ,T = SVD( matFrequencia, 3 , "Posto Grupos "+str(i) )
+		matrizFrequencia = Kmer( sequenciasModelo +sequenciasQuery  , 3 )
+		print "Length of the matrix Model: ",matrizFrequencia.shape
 
-		numeroSeqModel = len(sequenciasModel)
+		#SlateBlue, MediumVioletRed, DarkOrchid,DeepSkyBlue,DarkRed,OrangeRed,Teal,
+		#Lime,DarkGoldenrod,PaleTurquoise,Plum,LightCoral,CadetBlue,DarkSeaGreen,PaleGoldenrod,RosyBrown
+		Cores = ['b', 'g', 'r', 'c','m','y', 'k', '#6A5ACD', '#C71585','#9932CC','#8B0000','#FF4500',
+				'#008B8B','#00FF00','#B8860B','#E0FFFF','#DDA0DD' ,'#F08080' ,'#5F9EA0','#8FBC8F','#EEE8AA','#BC8F8F']
+
+		print "SVD"
+		aux ,T= SVD( matrizFrequencia, 3 , nomePlotPosto )
 
 		print "Creating graphic 3D"
-
 		fig1 = plt.figure()
 		ax = fig1.add_subplot(111, projection='3d')
 
@@ -417,66 +413,58 @@ def CrossValidation( sequencias, hashTab , kfold ):
 		IDCor = 0
 		temp = []
 
-
-		#print "Model"
-		for l in range(len(DistribuicaFamiliasModelo)):
-			if l == 0:#Primeira Familia Modelo
+		print "Model"
+		for i in range(len(DistribuicaFamiliasModelo)):
+			if i == 0:#Primeira Familia Modelo
 				x = aux[0:1,0:int(DistribuicaFamiliasModelo[0]) ]
 				y = aux[1:2,0:int(DistribuicaFamiliasModelo[0]) ]
 				z = aux[2:3,0:int(DistribuicaFamiliasModelo[0]) ]
-				F[FamiliasModelo[l]] = "0:"+str(int(DistribuicaFamiliasModelo[0]) )
+				F[FamiliasModelo[i]] = "0:"+str(int(DistribuicaFamiliasModelo[0]) )
 		
-			elif(l == len(DistribuicaFamiliasModelo)-1 ):#Ultima familia Modelo
+			elif(i == len(DistribuicaFamiliasModelo)-1 ):#Ultima familia Modelo
 	
 				x = aux[0:1,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
 				y = aux[1:2,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
 				z = aux[2:3,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
-				F[FamiliasModelo[l]] = str(int(DistribuicaFamiliasModelo[l-1]) ) + ":" + str(numeroSeqModel)
+				F[FamiliasModelo[i]] = str(int(DistribuicaFamiliasModelo[i-1]) ) + ":" + str(numeroSeqModel)
 		
 			else:
-				x = aux[0:1,int(DistribuicaFamiliasModelo[l-1]) :int(DistribuicaFamiliasModelo[l]) ]
-				y = aux[1:2,int(DistribuicaFamiliasModelo[l-1]) :int(DistribuicaFamiliasModelo[l]) ]
-				z = aux[2:3,int(DistribuicaFamiliasModelo[l-1]) :int(DistribuicaFamiliasModelo[l]) ]
-				F[FamiliasModelo[l]] = str(int(DistribuicaFamiliasModelo[l-1]))+":"+str(int(DistribuicaFamiliasModelo[l]))
+				x = aux[0:1,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
+				y = aux[1:2,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
+				z = aux[2:3,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
+				F[FamiliasModelo[i]] = str(int(DistribuicaFamiliasModelo[i-1]))+":"+str(int(DistribuicaFamiliasModelo[i]))
 
-			ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor], s = 100 )
+			#ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor], s = 100 )
 			IDCor = IDCor +1
-			temp.append(FamiliasModelo[l])
-			temp.append(str(F[FamiliasModelo[l]]))
+			temp.append(FamiliasModelo[i])
+			temp.append(str(F[FamiliasModelo[i]]))
 
-	
-		#print "Query"
+
+		print "Query"
 		tx = aux[0:1, numeroSeqModel +1: ]
 		ty = aux[1:2, numeroSeqModel +1: ]
 		tz = aux[2:3, numeroSeqModel +1: ]
-		tF['Query family'] = str(numeroSeqModel+1)+":"+str(numeroSequencias )
+		tF['Query family'] = str(numeroSeqModel+1)+":"+str(NumroDeSequencias )
 		ax.scatter(tx, ty, tz, c='#000000', marker='*',label='Query', s = 100 )
 
 		# Criando figura
 		plt.legend(loc='upper left', numpoints=1, ncol=3, fontsize=10, bbox_to_anchor=(0, 0))
 		if(len(nomePlotClusterizacao) > 0):
-			fig1.savefig('results/'+nomePlotClusterizacao+'Grupo'+str(i) +'.png', dpi=300)
+			fig1.savefig('results/'+nomePlotClusterizacao+'.png', dpi=300)
 			plt.close(fig1)
 		else:
 			plt.show()
 
 		# Calculando delauney
-		sequenciasQuery = sequencias[0:-numero_Seq_por_grupos]
-		print "ABBBBBBBBBBBBBB:",len(sequenciasQuery)
-		#print "Calculing delaunay"
-		delaunay( temp, aux , sequenciasQuery, hashTab )
+		print "Calculing delaunay"
+		delaunay( temp , aux, sequenciasQuery,hashTab, opcao_entrada )
 
-		#print "| Running validation |" 
-		ruido = (1 - Validation( hashTab, sequenciasQuery) ) + ruido
+		print "| Running validation |"
+		A,B = Validation(hashTab, sequenciasQuery, opcao_entrada )
+		acertos = acertos +  A
+		erros = erros +B
 
-		seqTemp = sequencias[ 0:numero_Seq_por_grupos ]
-		del sequencias[ 0:numero_Seq_por_grupos ]
-		sequencias = sequencias + seqTemp
-
-	print "AC: " ,float(ruido/numeroSequencias)
-
-
-	return'''
+	return "%0.3f" % float(acertos/float((erros+ acertos)))
 
 
 

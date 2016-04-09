@@ -27,6 +27,10 @@ import sys
 import os
 
 os.system("clear")
+try:
+	os.mkdir("results")
+except:
+	print ""
 
 # Controle do tempo de exucucao
 ini = time.time()

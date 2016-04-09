@@ -28,6 +28,10 @@ import os
 from random import *
 
 os.system("clear")
+try:
+	os.mkdir("results")
+except:
+	print "Erro ao criar diretorii results"
 
 # Controle do tempo de exucucao
 ini = time.time()
@@ -91,7 +95,6 @@ print "\n*******************************"
 print "        *** BIOSVD ***"
 print "*******************************\n"
 
-
 hashTab = {}
 allSequences = []
 print "Parsing files"
@@ -106,6 +109,9 @@ else:
 		for p in seqtemp:
 			hashTab[ p.id ] = sys.argv[j].split('.')[0]
 
+
+print bio.CrossValidation( allSequences,kfold, hashTab ,opcao_entrada)
+'''
 acertos = 0
 erros =0
 numeroSequencias = len(allSequences)
@@ -169,23 +175,7 @@ for sequenciasModelo in Allgrups:
 
 	fig1 = plt.figure()
 	ax = fig1.add_subplot(111, projection='3d')
-	'''
-	x = aux[ 0:1, :]
-	y = aux[ 1:2, :]
-	z = aux[ 2:3, :]
 
-	ax.scatter(x, y, z, c=Cores[3], marker='o', label=FamiliasModelo[0], s = 100 )
-
-	print "Query"
-	T3 =  T[ :, 0:3]
-	qtil = []
-	for t in range(numeroSeqQuery):
-		aux = np.dot(T3.T , Q.T[0])
-		qtil.append(aux)
-
-	ax.scatter(qtil[0], qtil[1],qtil[2], c='#000000', marker='*',label='Query', s = 100 )
-
-	'''
 	F = {}
 	tF = {}
 	IDCor = 0
@@ -246,7 +236,7 @@ for sequenciasModelo in Allgrups:
 	erros = erros +B
 
 print "Acuracia: %0.3f" % float(acertos/float((erros+ acertos)))
-
+'''
 # Fim do tempo de execucao 
 fim = time.time()
 print "Time: ", fim-ini
