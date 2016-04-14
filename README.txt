@@ -1,11 +1,12 @@
 # BIOSVD 
-# VERSION: 0.1 ALPHA
 
 # Documentation
 # Language: PT-BR
 
-# Hierarquia do programa ******************************************
+# Hierarquia do repositório  ******************************************
 #
 # LATEST      	Última versão do script
 # Versions	 	Versões antigas do BioSVD
 
+# Log de versões ******************************************
+0.7.1
