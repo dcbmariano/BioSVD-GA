@@ -34,12 +34,12 @@ def SVD (  matriz , K , namePlotPosto):
 	Posto( s,namePlotPosto )
 	return aux, U
  
-def Kmer( sequencias, k ):
+def Kmer( sequencias, kmer_tam ):
 	print "Creating K-MERS"
 	aminoacidos = [ 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I','L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' ]
 	HashKMer = {}
 	t = 0
-	kmers = [''.join(p) for p in itertools.product(aminoacidos, repeat=k)]
+	kmers = [''.join(p) for p in itertools.product(aminoacidos, repeat=kmer_tam)]
 
 	NumerosDeKMER = len(kmers)
 	NumroDeSequencias = len(sequencias)
@@ -53,10 +53,10 @@ def Kmer( sequencias, k ):
 
 	print 'Filling K-MER Matrix'
 	for j in range(NumroDeSequencias):
-		for k in range( len(sequencias[j]) -2):
+		for k in range( len(sequencias[j]) -(kmer_tam-1)):
 			#Kmer contem algum aminoacidos fora dos 20 que estamos usando. Vamos ignorar tal kmer
-			if str(sequencias[j].seq[k:k+3]) in HashKMer: # O preenchimento e por coluna
-				i = HashKMer.get(str(sequencias[j].seq[k:k+3]))
+			if str(sequencias[j].seq[k:k+kmer_tam]) in HashKMer: # O preenchimento e por coluna
+				i = HashKMer.get(str(sequencias[j].seq[k:k+kmer_tam]))
 				matFrequencia[i][j] = 1
 
 	return matFrequencia
