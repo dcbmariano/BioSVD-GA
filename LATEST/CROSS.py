@@ -1,302 +1,242 @@
 #!/usr/bin/python
-#     Program: experimento.py
-#    Function: Implementa o experimento de Dobson com o metodo biosvd
-# Description: 
-#      Author: Diego Mariano, Thiago da Silva Correia, Jose Renato Barroso, Raquel Cardoso de Melo-Minardi
-#     Version: 1
+#     Program: biosvd.py
+#    Function: Implementa o metodo de svd para classificacao de proteinas
+# Description: inclui: delaunay.py e sort.py - Por enquanto estamos limitado a 23 cores no plot assim so podemos ter 23 familas diferentes. Isso sera revisado(Por Thiago)
+#      Author: Thiago da Silva Correia, Diego Mariano, Jose Renato Barroso, Raquel Cardoso de Melo-Minardi
+#     Version: 7.01
 
 
-import sys
-from BioSVD import BioSVD 
-from Bio import SeqIO
-from numpy import * 
+# Hierarquia do programa ******************************************
+#
+# ./        	Diretorio raiz
+# biosvd.py 	Script principal
+# README.txt	Contem instruoes de execucao
+# example   	Diretorio onde ficaram armazeados dados para testes
+# results   	Diretorio onde deverao ser salvos os outputs	 
+
+
+# IMPORTS
+from BioSVD import BioSVD as bio
 from mpl_toolkits.mplot3d import Axes3D
+from numpy import linalg as LA
+from Bio import SeqIO
 import matplotlib.pyplot as plt
-from random import randint
-from scipy.spatial import Delaunay,distance
+import numpy as np
+import time
+import sys
+import os
+from random import *
 
+os.system("clear")
+try:
+	os.mkdir("results")
+except:
+	print "Erro ao criar diretorii results"
+
+# Controle do tempo de exucucao
+ini = time.time()
 
 # Parametros e help
-i = 1
-familias = []
-seqs = ''
-inicio = 0
-fim = 0
+i = 2
+nomePlotClusterizacao = ''
+nomePlotPosto = ''
+kfold = 0
 
-# Percorre os parametros enviados ########################################################
-while i < (len(sys.argv)):
+opcao_entrada =  sys.argv[1]
+
+while opcao_entrada == '-B' and i< 8:
+	if( sys.argv[i] == '-g'):
+		nomePlotClusterizacao = sys.argv[i+1]
+
+	if( sys.argv[i] == '-p'):
+		nomePlotPosto = sys.argv[i+1]
+
+	if( sys.argv[i] == '-k'):
+		kfold = int(sys.argv[i+1])
+	i = i+2
 
 
-	# Help ###############################################################################
+while opcao_entrada == '-A' and i < (len(sys.argv)):
+
+	# m = modelo
+	if( sys.argv[i] == '-m'):
+		FileSequencias = sys.argv[i+1]
+
+	# mt = modelo - arquivo tabular
+	if( sys.argv[i] == '-mt'):
+		FileTabular = sys.argv[i+1]
+
+	# k-fold
+	if( sys.argv[i] == '-k'):
+		kfold = int(sys.argv[i+1])
+
+	if( sys.argv[i] == '-g'):
+		nomePlotClusterizacao = sys.argv[i+1]
+
+	if( sys.argv[i] == '-p'):
+		nomePlotPosto = sys.argv[i+1]
+
+
+	# Help
 	if sys.argv[i] == '-h' or sys.argv[i] == '--help':
-		print "\n*** BIOSVD ***\nSyntax: \npython experimento.py [arquivos.fasta]\n"
+		print "\n*** BIOSVD ***\nSyntax: \n\tpython biosvd.py \n\t\t -A \n\t\t-m  [model] \n\t\t-mt [model tabular file] \n\t\t-q  [query] \n\t\t-k [K-fold]\n"
 		sys.exit()
+	
+	i = i+2
 
-	# End Help ###########################################################################
+# Valida se nenhum parametro for enviado
+if i == 1:
+	print "\n*** BIOSVD ***\nSyntax: \n\tpython biosvd.py \n\t\t-m  [model] \n\t\t-mt [model tabular file] \n\t\t-q  [query] \n\t\t-qt [query tabular file - optional]\n"
+	sys.exit()
 
 
-	# Cada arquivo fasta contem uma familia diferente, logo so precisa do fasta pra rodar
-	arquivo = sys.argv[i]
-	familia_completo = arquivo.split("/") # caso envie a partir de varias pastas
-	familia_split = familia_completo[len(familia_completo)-1].split(".") # remove a extensao
-	familia = familia_split[0]
+# Aqui comeca a magia
+print "\n*******************************"
+print "        *** BIOSVD ***"
+print "*******************************\n"
 
-	# Lendo CADA sequencia com biopython
-	seq = list(SeqIO.parse( open(arquivo, "r")  , "fasta"))
-	if seqs != '':
-		seqs = seqs + seq
+hashTab = {}
+allSequences = []
+print "Parsing files"
+#Criando tabular
+if opcao_entrada == '-A':
+	hashTab, FamiliasModelo = bio.CriarHashTab(FileTabular)
+	allSequences = list(SeqIO.parse( FileSequencias , "fasta"))
+else:
+	for j in range(i,len(sys.argv)):
+		seqtemp = list(SeqIO.parse( sys.argv[j], "fasta"))
+		allSequences = allSequences + seqtemp
+		for p in seqtemp:
+			hashTab[ p.id ] = sys.argv[j].split('.')[0]
+
+
+print bio.CrossValidation( allSequences,kfold, hashTab ,opcao_entrada)
+'''
+acertos = 0
+erros =0
+numeroSequencias = len(allSequences)
+numero_Seq_por_grupos= numeroSequencias/kfold
+numeroSeqModel = numero_Seq_por_grupos
+listSequencias = [] #Contem o Kfold grupos de sequencias. cada grupo tem o mesmo numero de sequencias
+
+print "Creating K-fold"
+for j in range( kfold ):
+	seq = []
+	while len(seq) < numero_Seq_por_grupos :
+		try:
+			i =randint(0, len(allSequences))
+			seq.append(allSequences[i])
+			del allSequences[i]
+		except:
+			PO = 0
+	listSequencias.append(seq[:])
+	del seq[:]
+
+l=0
+Allgrups = listSequencias[:]
+print '\n'
+for sequenciasModelo in Allgrups:
+	print "Grupo: %d" % (l+1)
+	nomePlotPosto ="posto%d" % l
+	nomePlotClusterizacao="Clus%d" % l
+	l = l +1
+
+	listSequencias.remove(sequenciasModelo) #Removendo o grupo de sequencias que sera o modelo
+	sequenciasQuery = []
+	for aux in listSequencias:
+		sequenciasQuery = sequenciasQuery + aux
+
+	numeroSeqQuery = len(sequenciasQuery)
+	NumroDeSequencias = numeroSeqModel + numeroSeqQuery
+	listSequencias.append(sequenciasModelo)
+	print "Sorting Seq"
+	# Numero de familas do modelo | Lista com todas as familias sem repeticao | Lista com a distruicao das Familias na lista | Lista com as sequencias do modelo
+
+	NumFamiliasModelo ,FamiliasModelo, DistribuicaFamiliasModelo , sequenciasModelo =  bio.Sort( sequenciasModelo, hashTab ,opcao_entrada )
+
+	print "Model lenth: %d\nQuery lenth %d:\n" % (numeroSeqModel, numeroSeqQuery )
+
+
+	#Preenchendo matriz de frequencia
+	matrizFrequencia = bio.Kmer( sequenciasModelo +sequenciasQuery  , 3 )
+	#Q = bio.Kmer( sequenciasQuery  , 3 )
+	print "Length of the matrix Model: ",matrizFrequencia.shape
+	#print "Length of the matrix Query: ",Q.shape
+
+	#SlateBlue, MediumVioletRed, DarkOrchid,DeepSkyBlue,DarkRed,OrangeRed,Teal,
+	#Lime,DarkGoldenrod,PaleTurquoise,Plum,LightCoral,CadetBlue,DarkSeaGreen,PaleGoldenrod,RosyBrown
+	Cores = ['b', 'g', 'r', 'c','m','y', 'k', '#6A5ACD', '#C71585','#9932CC','#8B0000','#FF4500',
+			'#008B8B','#00FF00','#B8860B','#E0FFFF','#DDA0DD' ,'#F08080' ,'#5F9EA0','#8FBC8F','#EEE8AA','#BC8F8F']
+
+	print "SVD"
+	aux ,T= bio.SVD( matrizFrequencia, 3 , nomePlotPosto )
+
+	print "Creating graphic 3D"
+
+	fig1 = plt.figure()
+	ax = fig1.add_subplot(111, projection='3d')
+
+	F = {}
+	tF = {}
+	IDCor = 0
+	temp = []
+
+	print "Model"
+	for i in range(len(DistribuicaFamiliasModelo)):
+		if i == 0:#Primeira Familia Modelo
+			x = aux[0:1,0:int(DistribuicaFamiliasModelo[0]) ]
+			y = aux[1:2,0:int(DistribuicaFamiliasModelo[0]) ]
+			z = aux[2:3,0:int(DistribuicaFamiliasModelo[0]) ]
+			F[FamiliasModelo[i]] = "0:"+str(int(DistribuicaFamiliasModelo[0]) )
+		
+		elif(i == len(DistribuicaFamiliasModelo)-1 ):#Ultima familia Modelo
+	
+			x = aux[0:1,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
+			y = aux[1:2,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
+			z = aux[2:3,int(DistribuicaFamiliasModelo[ -1]) : numeroSeqModel ]
+			F[FamiliasModelo[i]] = str(int(DistribuicaFamiliasModelo[i-1]) ) + ":" + str(numeroSeqModel)
+		
+		else:
+			x = aux[0:1,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
+			y = aux[1:2,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
+			z = aux[2:3,int(DistribuicaFamiliasModelo[i-1]) :int(DistribuicaFamiliasModelo[i]) ]
+			F[FamiliasModelo[i]] = str(int(DistribuicaFamiliasModelo[i-1]))+":"+str(int(DistribuicaFamiliasModelo[i]))
+
+		#ax.scatter(x, y, z, c=Cores[IDCor], marker='o', label=FamiliasModelo[IDCor], s = 100 )
+		IDCor = IDCor +1
+		temp.append(FamiliasModelo[i])
+		temp.append(str(F[FamiliasModelo[i]]))
+
+
+	print "Query"
+	tx = aux[0:1, numeroSeqModel +1: ]
+	ty = aux[1:2, numeroSeqModel +1: ]
+	tz = aux[2:3, numeroSeqModel +1: ]
+	tF['Query family'] = str(numeroSeqModel+1)+":"+str(NumroDeSequencias )
+	ax.scatter(tx, ty, tz, c='#000000', marker='*',label='Query', s = 100 )
+	
+
+	
+	# Criando figura
+	plt.legend(loc='upper left', numpoints=1, ncol=3, fontsize=10, bbox_to_anchor=(0, 0))
+	if(len(nomePlotClusterizacao) > 0):
+		fig1.savefig('results/'+nomePlotClusterizacao+'.png', dpi=300)
+		plt.close(fig1)
 	else:
-		seqs = seq
+		plt.show()
 
-	total_seqs = len(seq)
+	# Calculando delauney
+	# POG DIEGO - modificar isso no futuro *************************************************************************
+	print "Calculing delaunay"
 
-	fim = inicio + total_seqs 
+	bio.delaunay( temp , aux, sequenciasQuery,hashTab, opcao_entrada )
+	print "| Running validation |"
+	A,B = bio.Validation(hashTab, sequenciasQuery, opcao_entrada )
+	acertos = acertos +  A
+	erros = erros +B
 
-	# o que familias armazena - Ex.:
-	# hidrolase, 0, 100
-	# Define uma cor aleatoria 
-	numero_aleatorio = randint(100000,999999)
-	familias.append([familia,inicio,fim,numero_aleatorio])
-
-	# incrementa o contador
-	i += 1
-	inicio = fim
-
-
-# Criando matriz de k-mers ##################################################################
-matkmer = biosvd.Kmer(seqs,3)
-
-# SVD #######################################################################################
-print "SVD"
-U, s, V = linalg.svd(matkmer)
-SK =  diag(s) # Normlizando a matriz S
-Temp = SK/sum(s) 
-SN = diag( Temp )
-
-# SVD | Visualizando posto
-fig2 = plt.figure()
-plt.axis([0, 20, 0, 0.5]) #Aqui limito os eixos X e Y do plot
-plt.plot(SN.T)
-fig2.savefig('posto.png', dpi=300)
-plt.close(fig2)
-
-# SVD | Criando matriz de posicionamento
-posto = 3 # usa posto 3 por default
-SK = SK[0:posto,0:posto]
-Vaux = V.transpose()
-VK = Vaux[:,:posto]
-aux = dot(SK , VK.transpose() )
-
-# SVD | Visualizando matriz de posicionamento
-fig1 = plt.figure()
-ax = fig1.add_subplot(111, projection='3d') # Requer from mpl_toolkits.mplot3d import Axes3D
-
-# Preenche as posicoes x, y e z
-for i in range(fim):
-	x = aux[0:1, i:i+1]
-	y = aux[1:2, i:i+1]
-	z = aux[2:3, i:i+1]
-
-	# Definindo cores
-	for j in familias:
-		if i >= j[1] and i < j[2]:
-			cor = "#%d" %(j[3])
-
-	ax.scatter(x, y, z, c=cor, marker='o', s=100, label=j[0]) # plota o ponto
-
-plt.show()
-plt.close(fig1)
-
-# Invertendo a matriz aux -> pontos (transpondo)
-pontos = []
-tam = len(aux[0])
-for i in range(tam):
-	pontos.append([aux[0][i],aux[1][i],aux[2][i]])
-
-
-
-# Validacao cruzada ######################################################################
-
-# seleciona 5 ou 10 % -> regra: quantidade proporcionalmente igual para todos
-# O teste sera realizado com 5 ou 10% da base, enquanto o treino eh feito com 90 ou 95%
-vc = 10; #5 ou 10 (10 default) 
-
-# CRIA OS GRUPOS
-# Atencao: ele distribui igualmente os elementos em grupos 
-# a quantidade de grupos eh definida na variavel vc
-# Ele le cada elemento (variavel tam) e armazena no grupo 0
-# o proximo elemento ele armazena no grupo 1, o proximo no 2
-# e assim sucessivamente
-# os grupos estao armazenados em fold e as familias em fold_familia 
-j = 0
-fold = []
-fold_familia = []
-
-# Crie os grupos em branco (nao consegui resolver de outra maneira :[ )
-for i in range(vc):
-	fold.append([])
-	fold_familia.append([])
-
-# Percorre cada elemento
-# tam armazena tamanho do array pontos
-for i in range(tam):
-
-	# quando chegar ao ultimo grupo (=vc), retorne o valor a zero
-	if j == vc:
-		j = 0
-
-	# Cada elemento sera inserido no grupo j
-	fold[j].append(pontos[i])
-
-	for f in familias:
-		if i >= f[1] and i < f[2]: # f[0] armazena o nome da familia, f[1] inicio em tam, f[2] fim em tam
-			fold_familia[j].append(f[0]) # esse codigo merece ganhar o nobel da programacao
-
-	j += 1
-
-
-# Arquivo de resultado
-w = open("result.txt","w")
-
-acertos_teste = 0
-acertos_erros_teste = 0
-acertos_total = 0
-acertos_erros_total = 0
-
-# Agora que os grupos estao separados vamos CLASSIFICAR
-# O teste sera repetivo 5 ou 10 vezes
-for i in range(vc):
-
-	print "\nREALIZANDO TESTE %d\n" %(i)
-
-	# Gravando resultados
-	titulo = "::Teste %d\n" %(i)
-	menu = "Proteina_Grupo\tAcerto\tPredicao\tOriginal\tVotos\n"
-	w.write(titulo)
-	w.write(menu)
-
-	treino = fold[:] #faz a copia completa de fold :) -> se eu fizer apenas treino = fold ele copia apenas a posicao na memoria
-	teste = treino.pop(i) #elimina i de treino e retorna para teste
-
-	treino_familia = fold_familia[:]
-	teste_familia = treino_familia.pop(i)
-
-	# Para cada elemento proteina no grupo i
-	proteina_id = 0 # necessario pois proteina eh um objeto e nao um inteiro
-	for proteina in fold[i]:
-
-		print "Analisando proteina %d do grupo %d." %(proteina_id,i)
-		
-		
-		# roda delaunay
-		# Aqui faco o delauney de um dos elementos da base teste + toda base de treino
-		teste_atual = [] #zero o valor de teste atual
-		teste_atual.append(proteina) # insiro o valor testado primeiro
-
-		# isso eh necessario pois ha listas dentro de listas, tenho que colocar todo mundo no mesmo nivel
-		for cada_grupo in treino: 
-			for elemento in cada_grupo:
-				teste_atual.append(elemento)
-
-		# O mesmo deve ser feito em familia -> assim familia_teste_atual equivale a p[1] ou p[0]
-		familia_teste_atual = []
-		familia_teste_atual.append(fold_familia[i][proteina_id]) # elemento que devera ser predito :) 
-
-		for cada_grupo in treino_familia: 
-			for elemento in cada_grupo:
-				familia_teste_atual.append(elemento) 
-		
-
-		# ----------------------------------- CLIMAX ------------------------------------- #
-		delaunay = Delaunay(teste_atual) 
-
-		# Extraindo os pares
-		pares = []
-		for par in delaunay.vertices: 
-			for k in range(4):
-				for j in range(k+1,4):
-					pares.append([par[k],par[j]])
-		#print "Total of pairs: ",len(pares)
-
-		# Remove duplicacoes 
-		pares_unicos = []
-		for x in pares:
-			if x not in pares_unicos:
-				pares_unicos.append(x)
-		#print "Total of unique pairs: ",len(pares_unicos)
-
-		# Busca contatos
-		votos = {}
-		for f in familias:
-			votos[f[0]] = 0 # zera o contador de votos
-
-		for p in pares_unicos:
-			if p[0] == 0:
-				print "Proteina %d (familia %s) faz contato com %d (familia %s)." %(proteina_id,familia_teste_atual[0],p[1],familia_teste_atual[p[1]])
-				
-				# ALGORITMO DE VOTACAO - usado pra predizer a familia
-				#para cada familia
-				for f in familias:
-					# nome da familia eh armazenado em f[0]
-					if f[0] == familia_teste_atual[p[1]]:
-						votos[f[0]] += 1
-
-
-			if p[1] == 0:
-				print "Proteina %d (familia %s) faz contato com %d (familia %s)." %(proteina_id,familia_teste_atual[0],p[0],familia_teste_atual[p[0]])
-
-				# ALGORITMO DE VOTACAO - usado pra predizer a familia
-				#para cada familia
-				for f in familias:
-					# nome da familia eh armazenado em f[0]
-					if f[0] == familia_teste_atual[p[0]]:
-						votos[f[0]] += 1
-		
-		print votos
-
-		# Gravando resultados
-		proteina_grupo = "%d_%d" %(proteina_id,i)
-		acerto = 0
-		predicao = max(votos,key=votos.get)
-		original = familia_teste_atual[0]
-		if predicao == original:
-			acerto = 1
-
-		acertos_teste += acerto
-		acertos_erros_teste += 1
-		acertos_total += acerto
-		acertos_erros_total += 1
-
-		linha = "%s\t%d\t%s\t%s\n" %(proteina_grupo, acerto, predicao, original)
-		print linha
-		w.write(linha)
-
-		proteina_id += 1
-
-	# Calculando acuracia
-	acuracia_teste = float(acertos_teste)/float(acertos_erros_teste)
-	acertos_teste = 0 # zera variaveis
-	acertos_erros_teste = 0 # zera variaveis
-
-	print_acuracia = "\nAcuracia do teste: %0.2f\n\n" %(acuracia_teste)
-	w.write(print_acuracia)
-	print print_acuracia
-	w.write("--------------------------------------------------------------\n\n")
-
-acuracia_total = float(acertos_total)/float(acertos_erros_total)
-print "acertos total: "
-print acertos_total
-
-print "acertos erros: "
-print acertos_erros_total
-
-print "acuracia_total: "
-print acuracia_total
-
-print_acuracia_total = "\nAcuracia media: %0.2f\n\n" %(acuracia_total)
-print print_acuracia_total
-w.write(print_acuracia_total)
-print "\n--------------------------------------------------------------\n"
-print "Obrigado por usar BioSVD.\nFim da execucao.\n"
-print "--------------------------------------------------------------\n"
-w.close()
+print "Acuracia: %0.3f" % float(acertos/float((erros+ acertos)))
+'''
+# Fim do tempo de execucao 
+fim = time.time()
+print "Time: ", fim-ini
