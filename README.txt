@@ -3,7 +3,7 @@
 
 # ****** Hierarquia do repositório  ******
 # LATEST - Última versão ESTÁVEL do script (desenvolvedores nunca editem o LATEST)
-# versions - Versões antigas do BioSVD
+# old_versions - Versões antigas do BioSVD
 # README.txt - log de versões
 
 
