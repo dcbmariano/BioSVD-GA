@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 #     Program: BioSVD.py
 #    Function: Protein and nucleotide clusterization
@@ -23,13 +23,13 @@ from functools import partial
 from random import *
 import sys
 
+
 # List of functions:
-# - read
-# - kmer
-# - svd
-# - svds
-# - factor
-# - extractFactor
+# - read: OK
+# - kmer: OK
+# - svds: OK
+# - factor: OK
+# - extractFactor: OK
 # - reductor
 # - plot2
 # - plot3
@@ -43,294 +43,178 @@ import sys
 
 # Function read: allows reading of multiple files in FASTA or PDB format
 # input: (1) format ('fasta' or 'pdb') - (2) list of files
-def read(format,files**):
-
-
-# Function kmer: 
-def kmer( sequencias, kmer_tam ):
-	# Creating K-MERS
-	aminoacidos = [ 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I','L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' ]
-	HashKMer = {}
-	t = 0
-	kmers = [''.join(p) for p in itertools.product(aminoacidos, repeat=kmer_tam)]
-
-	NumerosDeKMER = len(kmers)
-	NumroDeSequencias = len(sequencias)
-
-	matFrequencia = np.zeros(shape=(NumerosDeKMER, NumroDeSequencias))
+def read(format,*files):
 	
-	# Preenchendo a tabela HASH com os Kmers
-	for i in kmers:
-		HashKMer[ i ] = t
-		t = t+1
+	seqs = []
+	i = 0
 
-	print 'Filling K-MER Matrix'
-	for j in range(NumroDeSequencias):
-		for k in range( len(sequencias[j]) -(kmer_tam-1)):
-			#Kmer contem algum aminoacidos fora dos 20 que estamos usando. Vamos ignorar tal kmer
-			if str(sequencias[j].seq[k:k+kmer_tam]) in HashKMer: # O preenchimento e por coluna
-				i = HashKMer.get(str(sequencias[j].seq[k:k+kmer_tam]))
-				matFrequencia[i][j] = 1
+	if format == 'fasta' or format == 'FASTA':
+		for f_listas in files:
+			for f in f_listas:
+				seq_fasta = list(SeqIO.parse(open(f, "r"),"fasta"))
 
-	return matFrequencia
+				for s in seq_fasta:
+					seqs.append({'id':i, 'name': s.name, 'seq': str(s.seq), 'group': f})
+					i += 1
 
+	return seqs
 
 
+# Function kmer: receives a sequence object and return a k-mer matrix
+def kmer(seqs,kmer_len,type):
 
-def SVD (  matriz , K , namePlotPosto):
+	# Creating K-MERS
 
-	U, s, V = svds( matriz )
-	V = V.transpose()
-	tam = len(s)
-	s[:] =  s[::-1] #Ordenando de forma decrescente
-	S = np.diag(s)	#Criando a matrix S cuja colunas sao formandas pelo vetor s
-	SK = S[0:K,0:K]
-	VK = V[:,:K]
-	aux = np.dot(SK , VK.transpose() )
-	Posto( s,namePlotPosto )
-	return aux, U
- 
-#Para exibir o posto para passar o namePlotPosto vazio
-def Posto( vetorS , namePlotPosto ):
-	S = vetorS*(1/np.sum(vetorS))	#Dividindo pela soma do vetor s
-	fig2 = plt.figure()
-	fig2.suptitle('Posto')
-	#Aqui limito os eixos X e Y do plot
-	#plt.axis([0, tam , 0, 0.5])
-	plt.plot(S)
-	if(len(namePlotPosto) >0):
-		fig2.savefig('results/'+namePlotPosto+'.png', dpi=300)
-		plt.close(fig2)
-	else:
+	# For amino acids
+	if type == 'a' or type == 'A':
+		aminoacidos = [ 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I','L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' ]
+		HashKMer = {}
+		t = 0
+		kmers = [''.join(p) for p in itertools.product(aminoacidos, repeat=kmer_len)]
+
+		NumerosDeKMER = len(kmers)
+		numseqs = len(seqs)
+
+		matFreq = np.zeros(shape=(NumerosDeKMER, numseqs))
+		
+		# Preenchendo a tabela HASH com os Kmers
+		for i in kmers:
+			HashKMer[ i ] = t
+			t = t+1
+
+		# Filling K-MER Matrix
+		for j in range(numseqs):
+			for k in range( len(seqs[j]['seq']) -(kmer_len-1)):
+				#Kmer contem algum aminoacidos fora dos 20 que estamos usando. Vamos ignorar tal kmer
+				if seqs[j]['seq'][k:k+kmer_len] in HashKMer: # O preenchimento e por coluna
+					i = HashKMer.get(seqs[j]['seq'][k:k+kmer_len])
+					matFreq[i][j] = 1
+
+		return matFreq
+
+	# For nucleotides
+	elif type == 'n' or type == 'N':
+		nucleotides = ['A','T','C','G']
+		HashKMer = {}
+		t = 0
+		kmers = [''.join(p) for p in itertools.product(nucleotides, repeat=kmer_len)]
+
+		NumerosDeKMER = len(kmers)
+		numseqs = len(seqs)
+
+		matFreq = np.zeros(shape=(NumerosDeKMER, numseqs))
+		
+		# Preenchendo a tabela HASH com os Kmers
+		for i in kmers:
+			HashKMer[ i ] = t
+			t = t+1
+
+		# Filling K-MER Matrix
+		for j in range(numseqs):
+			for k in range( len(seqs[j]['seq']) -(kmer_len-1)):
+				if seqs[j]['seq'][k:k+kmer_len] in HashKMer: 
+					i = HashKMer.get(seqs[j]['seq'][k:k+kmer_len])
+					matFreq[i][j] = 1
+
+		return matFreq
+
+
+def svd(matrix):
+	return svds(matrix)
+
+
+def factor(S,action):
+
+	# Actions:
+	# - plot: shows the factor figure  
+	# - save: save the factor figure in the disk
+	
+	#S[:] =  S[::-1] # ------------------------------- isto eh necessario Thiago? -------------------------
+	s = np.diag(S)
+	s = s*(1/np.sum(s))
+
+	# Generating figure
+	fig = plt.figure()
+	fig.suptitle('Factor plot')
+	plt.plot(s)
+
+	# Save figure
+	if action == 'save':
+		fig.savefig('factor.png', dpi=300)
+		plt.close(fig)
+
+	# Ploting figure
+	elif action == 'plot':
 		plt.show()
 
 
-def delaunay( familias_modelo, matriz , sequenciasQuery, HastabularQuey, opcao_entrada ):
-	# definindo familias
-	f = {}
-	for i in range(len(familias_modelo)):
-		if i % 2 == 0:
-			aux = familias_modelo[i].strip()
-		if i % 2 == 1:
-			f[aux] = familias_modelo[i].strip()
-			ultimo = familias_modelo[i].split(":")
-			ultimo_elemento_modelo = int(ultimo[1])
+def extractFactor(S,V,factor):
+	Sfactor = S[:factor,:factor]
+	Vfactor = V[:factor,:]
 
-	# Recebendo todos os dados (variaveis x, y e z)
-	x = matriz[0]
-	y = matriz[1]
-	z = matriz[2]
+	AUXfactor = np.dot(Sfactor, Vfactor)
 
-	# Resultado final
-	fr = open("./results/family_prediction.txt","w")
-	#fID = open("./results/ID_prediction.txt","w")
-	fr.write("protein_id (query)\tfamily predicted\tfamily correct\n")
+	return AUXfactor
 
 
-	# Predicao aqui
-	print "Determining contacts"
-
-	# Relatorio de percentual
-	report = open("./results/report_contacts.txt","w")
-
-	# Modificacao aqui
-	# delauney deve ser executado com o modelo e cada proteina individualmente
-	coord = []
-
-	# Unindo matrizes x y z => APENAS MODELO
-	for i in range(len(x)):
-		coord.append([float(x[i]),float(y[i]),float(z[i])])
-
-	# IMPORTANTE
-	# Inseriremos um elemento por vez na lista coord e calculamos o delauney - matriz x eh usada como exemplo
-	jend = len(x)
-
-	for i in range(ultimo_elemento_modelo,jend):
-
-		# UM POR VEZ  
-		lista_atual = coord[:ultimo_elemento_modelo] + [coord[i]]
-		tam_lista_atual = len(lista_atual)
-
-		# Calculando os tetraedros ********************************************* PONTO MAIS IMPORTANTE AQUI =>
-		delaunay = Delaunay(lista_atual)
-
-			# Extraindo os pares ********************************************
-		pares = []
-		for par in delaunay.vertices: 
-			for k in range(4):
-				for j in range(k+1,4):
-					pares.append([par[k],par[j]])
-
-		  #print "Total of pairs: ",len(pares)
-
-		  # Remove duplicacoes ********************************************
-		pares_unicos = []
-		for x in pares:
-			if x not in pares_unicos:
-				pares_unicos.append(x)
-
-	# Validando o teste - proteinas testes estao armazenadas em pares_unicos[da ultima posicao do modelo ate a ultima posicao da lista coord]
-
-		# Contador de elementos por familia (cef)
-		# Deve ser zerado para cada elemento testado
-		cef = {}
-		for k in f:
-			cef[k] = 0
-
-		# Analisamos cada par 
-		for j in pares_unicos:
-			# Verificamos se o elemento esta na posicao 0
-			if j[0] == tam_lista_atual-1:
-				# para cada familia F armazenada na lista f
-				for F in f:
-					posicao = f[F].split(":")
-					if j[1] >= int(posicao[0]) and j[1] <= int(posicao[1]):
-						cef[F] += 1
-
-			# AGORA PRECISAMOS CONFERIR SE O VALOR TESTADO ESTA NA SEGUNDA POSICAO DO PAR
-			# Verificamos se o elemento esta na posicao 1
-			if j[1] == tam_lista_atual-1:
-			# para cada familia F armazenada na lista f
-				for F in f:
-					posicao = f[F].split(":")
-					if j[0] >= int(posicao[0]) and j[0] <= int(posicao[1]):
-						cef[F] += 1
-
-		# determina a familia com base em quem tem o maior numero de contatos
-		familia_atual = max(cef, key=cef.get)
-
-		# Relatorio de percentual
-		report_txt = ">position %d [%d:%d]\n" %(i,ultimo_elemento_modelo,len(coord))
-		report.write(report_txt)
-		report.write(str(cef))
-		report.write("\n")
-		  
-		# calcula o id da protein removendo a quantidade do modelo
-		protein_id = i - ultimo_elemento_modelo + 1
-		if opcao_entrada ==  '-A':
-			ID = sequenciasQuery[protein_id-1].id.split("|")[2]
-		else:
-			ID = sequenciasQuery[protein_id-1].id
-		family_correct = HastabularQuey.get(ID)
-		final = "%d\t%s\t%s\n" %(protein_id, familia_atual, str(family_correct))
-		#temp = 	"%s\t%s\n" %(str(sequenciasQuery[protein_id-1].id),familia_atual)
-		#fID.write(temp)
-		fr.write(final)
-
-	fr.close()
-	report.close()
-	print "\n****************************************************** \nSuccess! \nResults at: '/results/family_prediction.txt'.\n******************************************************\n"
+def reductor(matrix,dim):
+	print "Coming soon."
 
 
+def plot2(matrix):
+	print "Coming soon."
 
 
-def Validation( HashTab , SeqQuery, opcao_entrada ):
-	filetab_prediction = open("./results/family_prediction.txt", "r")
-	predictionList = []
-
-	tab_prediction = filetab_prediction.readline()
-	tab_prediction = filetab_prediction.readline()
-
-	while tab_prediction:
-		tab_prediction = tab_prediction.split('\t')
-		predictionList.append( tab_prediction[1].rstrip() )
-
-		tab_prediction = filetab_prediction.readline()
-
-	acertos = 0
-	proteinas_sem_familias = 0
-	erros = 0
-	for i in range(len(SeqQuery)):
-		if opcao_entrada ==  '-A':
-			ID = SeqQuery[i].id.split("|")[2]
-		else:
-			ID = SeqQuery[i].id
-		family = HashTab.get(ID)
-		if family is not None:
-			family = family.rstrip()
-		
-			if i <len(predictionList) and predictionList[i] == family:
-				acertos = acertos + 1
-			else:
-				erros = erros +1
-		else:
-			proteinas_sem_familias = proteinas_sem_familias + 1
-
-	# Calculando o total de acertos
-	porcentagem = 100*float(acertos) / float(len(predictionList) - proteinas_sem_familias )
-	print "%0.2f%% correct answers." %porcentagem
-	if int(porcentagem) > 60:
-		print ":)\n"
-	else: 
-		print ":(\n"
-	return acertos,erros
+def plot3(matrix):
+	print "Coming soon."
 
 
-
-#Agrupa as sequencias por familia
-def Sort( sequenciasModelo, HashTabular, opcao_entrada ):
-	Todasfamilias=[] #Sem repeticao
-	distribuicaoFamiliasModelos = []
-	SequenciasOrdenadas=[]
-	FamiliaNaOrdem = [] #Ordem com que as familias aparecem no arquivo. (Com repeticao )
-	seqs = []
-
-	for seq in sequenciasModelo:
-		if opcao_entrada =='-A':
-			ID = seq.id.split("|")[2]
-		else:
-			ID = seq.id
-		family = HashTabular.get(ID)
-		if family is not None:
-			family = family.rstrip() 
-			FamiliaNaOrdem.append( family )
-
-			if family not in Todasfamilias:
-				Todasfamilias.append(family )
-
-	k = -1
-	for fam in Todasfamilias:
-		for i in range(len(FamiliaNaOrdem)):
-			if fam == FamiliaNaOrdem[i]:
-				k = k+1
-				seqs.append(i)
-		distribuicaoFamiliasModelos.append(k)
-
-	#gravando as sequenciasModelo na lista
-	for i in seqs:
-		SequenciasOrdenadas.append(sequenciasModelo[i])
-
-	return len(Todasfamilias) ,Todasfamilias , distribuicaoFamiliasModelos , SequenciasOrdenadas
+def model():
+	print "Coming soon."
 
 
+def query():
+	print "Coming soon."
 
-#Criar uma tabela Hash onde os indices e o ID das sequencias
-def CriarHashTab( nameFileTabFamily ):
-	HashTab = {}
-	Familias = []
-	i = 0
-	FileTab = open(nameFileTabFamily, 'rU')
-	cont =0
-	while True:
-		cont = cont +1
-		row = FileTab.readline().split('\t')
-		if len(row) == 1:
-			break
-		else:
-			HashTab[ row[0].rstrip() ] =  row[1].rstrip()
-			if row[1] not in Familias:
-				Familias.append(row[1].rstrip())
 
-	FileTab.close()
-	return HashTab , Familias
+def knearest():
+	print "Coming soon."
 
-def Cosseno( A, B ):
-	dot = A* B 
+
+def kmeans():
+	print "Coming soon."
+
+
+def delaunay(matrix, action):
+
+	# Actions:
+	# - invert: invert columns and lines in the matrix
+
+	if action == 'invert':
+		print "Coming soon."
+
+	return Delaunay(matrix)
+
+
+def crossValidation():
+	print "Coming soon."
+
+
+def dist():
+	print "Coming soon."
+
+
+def cosine(A,B):
+	dot = A*B 
 	normA = LA.norm(A)
 	normB = LA.norm(B)
 
-	cos = float( dot/( normA * normB) )
+	cos = float( dot / ( normA * normB) )
 	return cos
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+
 
 #Calculates euclidean distances
 def dist_euclidiana(p1,p2):
