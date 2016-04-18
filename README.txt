@@ -1,24 +1,15 @@
-# BioSVD 
-
-# Documentation
-# Language: PT-BR
-
-# Hierarquia do repositório  ******************************************
-#
-# LATEST      	Última versão do script
-# Versions	 	Versões antigas do BioSVD
+# BioSVD - Log de versões
 
 
-# Log de versões ******************************************
+# ****** Hierarquia do repositório  ******
+# LATEST - Última versão ESTÁVEL do script (desenvolvedores nunca editem o LATEST)
+# versions - Versões antigas do BioSVD
+# README.txt - log de versões
 
 
-# ************************************************************************************
-0.7.1
-# ************************************************************************************
-
+# 0.7.1
 Apresenta svd,delaunay,crossvalidation e função de ordenação.
 
 
-# ************************************************************************************
-0.8
-# ************************************************************************************
+# 0.8.1
+Apresenta as funções factor 
