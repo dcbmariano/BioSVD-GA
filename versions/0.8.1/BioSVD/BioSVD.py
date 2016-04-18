@@ -41,24 +41,14 @@ import sys
 # - crossValidation
 
 
-def read():
+# Function read: allows reading of multiple files in FASTA or PDB format
+# input: (1) format ('fasta' or 'pdb') - (2) list of files
+def read(format,files**):
 
 
-def SVD (  matriz , K , namePlotPosto):
-
-	U, s, V = svds( matriz )
-	V = V.transpose()
-	tam = len(s)
-	s[:] =  s[::-1] #Ordenando de forma decrescente
-	S = np.diag(s)	#Criando a matrix S cuja colunas sao formandas pelo vetor s
-	SK = S[0:K,0:K]
-	VK = V[:,:K]
-	aux = np.dot(SK , VK.transpose() )
-	Posto( s,namePlotPosto )
-	return aux, U
- 
-def Kmer( sequencias, kmer_tam ):
-	print "Creating K-MERS"
+# Function kmer: 
+def kmer( sequencias, kmer_tam ):
+	# Creating K-MERS
 	aminoacidos = [ 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I','L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' ]
 	HashKMer = {}
 	t = 0
@@ -84,6 +74,22 @@ def Kmer( sequencias, kmer_tam ):
 
 	return matFrequencia
 
+
+
+
+def SVD (  matriz , K , namePlotPosto):
+
+	U, s, V = svds( matriz )
+	V = V.transpose()
+	tam = len(s)
+	s[:] =  s[::-1] #Ordenando de forma decrescente
+	S = np.diag(s)	#Criando a matrix S cuja colunas sao formandas pelo vetor s
+	SK = S[0:K,0:K]
+	VK = V[:,:K]
+	aux = np.dot(SK , VK.transpose() )
+	Posto( s,namePlotPosto )
+	return aux, U
+ 
 #Para exibir o posto para passar o namePlotPosto vazio
 def Posto( vetorS , namePlotPosto ):
 	S = vetorS*(1/np.sum(vetorS))	#Dividindo pela soma do vetor s

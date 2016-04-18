@@ -1,5 +1,5 @@
 # BIOSVD 
-# VERSION: 0.1 ALPHA
+# VERSION: 0.7.1 ALPHA
 
 # Documentation
 # Language: PT-BR
