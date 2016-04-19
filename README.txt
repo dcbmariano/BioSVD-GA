@@ -8,8 +8,9 @@
 
 
 # 0.7.1
-Apresenta svd,delaunay,crossvalidation e função de ordenação.
+- Apresenta svd, delaunay, crossvalidation e função de ordenação
 
 
 # 0.8.1
-Apresenta as funções factor 
+- Funções read, factor, extractFactor foram inseridas
+- Funções de ordenação foram removidas
