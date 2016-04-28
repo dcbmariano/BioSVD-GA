@@ -29,3 +29,9 @@ s = BioSVD.factor(S,'plot')
 
 # Testing function "extractFactor"
 mfkmer_3 = BioSVD.extractFactor(S,V,3)
+
+# Testing function "plot2"
+BioSVD.plot2( mfkmer,'plot')
+
+# Testing function "plot3"
+BioSVD.plot3( mfkmer,'plot')

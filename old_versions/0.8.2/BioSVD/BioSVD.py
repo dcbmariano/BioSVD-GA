@@ -15,8 +15,8 @@ from Bio import SeqIO
 import itertools
 import numpy as np
 from scipy.spatial import Delaunay,distance
-import multiprocessing as mp
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import math
 import os
 from functools import partial
@@ -164,12 +164,55 @@ def reductor(matrix,dim):
 	print "Coming soon."
 
 
-def plot2(matrix):
-	print "Coming soon."
+def plot2(matrix,action):
+	# Actions:
+	# - plot: shows the factor figure  
+	# - save: save the factor figure in the disk
+	colors = np.random.rand(matrix.shape[1])
+	s = matrix[:2,:]
+
+	# Generating figure
+	fig = plt.figure()
+	fig.suptitle('Factor plot')
+	x = s[:1,:]
+	y = s[1:2,:]
+	plt.scatter(x, y, s = 100, c=colors, alpha=0.5)
+
+	# Save figure
+	if action == 'save':
+		fig.savefig('factor2d.png', dpi=300)
+		plt.close(fig)
+
+	# Ploting figure
+	elif action == 'plot':
+		plt.show()
 
 
-def plot3(matrix):
-	print "Coming soon."
+def plot3(matrix,action):
+	# Actions:
+	# - plot: shows the factor figure  
+	# - save: save the factor figure in the disk
+	colors = np.random.rand(matrix.shape[1])
+	s = matrix[:3,:]
+
+	# Generating figure
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+	fig.suptitle('Factor plot')
+	x = s[:1,:]
+	y = s[1:2,:]
+	z = s[2:3,:]
+	ax.scatter(x, y, z, c=colors, marker='o', s = 100)
+
+
+	# Save figure
+	if action == 'save':
+		fig.savefig('factor3d.png', dpi=300)
+		plt.close(fig)
+
+	# Ploting figure
+	elif action == 'plot':
+		plt.show()
 
 
 def model():
