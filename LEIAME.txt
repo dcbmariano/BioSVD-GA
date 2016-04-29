@@ -1,15 +1,14 @@
-# BioSVD - Version log
+# BioSVD - Log de versões
 
 
 # ****** Hierarquia do repositório  ******
-# LATEST - Last version STABLE of the script (developers never edit the LATEST)
-# old_versions - Old versions of the BioSVD
-# README.txt - version log (en)
-# LEIAME.txt - version log (pt-br)
+# LATEST - Última versão ESTÁVEL do script (desenvolvedores nunca editem o LATEST)
+# old_versions - Versões antigas do BioSVD
+# README.txt - log de versões
 
 
 # 0.7.1
-- Present the functions: svd, delaunay, crossvalidation and sor
+- Apresenta svd, delaunay, crossvalidation e função de ordenação
 
 # 0.8.1
 - Funções read, factor, extractFactor foram inseridas

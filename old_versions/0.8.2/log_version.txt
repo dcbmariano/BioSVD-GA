@@ -1,5 +1,5 @@
 # BioSVD 
-# VERSION: 0.8.1
+# VERSION: 0.8.2
 
 # Documentation
-Inserted function read
+Inserted function plot2 and plot3

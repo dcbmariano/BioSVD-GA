@@ -1,0 +1,6 @@
+# BioSVD 
+# VERSION: 0.8.3
+
+# Documentation
+- Function factor corrected (matrix s was reversed)
+
