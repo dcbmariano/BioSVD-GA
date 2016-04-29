@@ -7,17 +7,21 @@
 # README.txt - log de versões
 
 
-# 0.7.1
-- Apresenta svd, delaunay, crossvalidation e função de ordenação
-
-# 0.8.1
-- Funções read, factor, extractFactor foram inseridas
-- Funções de ordenação foram removidas
+# 0.8.3 
+- Função dist (distância todos contra todos)
+- Função info (retorna informações de uma posição específica da lista seq)
+- Função knearest (retorna itens mais próximos)
+- Função delaunay
+- Função uniquePairs (retorna pares únicos)
 
 # 0.8.2 
 - Funções plot2 e plot3
 - Correção da função svd
 
-# 0.8.3 
-- Função dist (distância todos contra todos)
+# 0.8.1
+- Funções read, factor, extractFactor foram inseridas
+- Funções de ordenação foram removidas
+
+# 0.7.1
+- Apresenta svd, delaunay, crossvalidation e função de ordenação
 

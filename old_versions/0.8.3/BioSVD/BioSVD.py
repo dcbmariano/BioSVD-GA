@@ -31,13 +31,15 @@ import sys
 # - factor: OK
 # - extractFactor: OK
 # - reductor
-# - plot2
-# - plot3
+# - plot2: OK
+# - plot3: OK
 # - model
 # - query
-# - knearest
-# - kmeans
-# - delaunay
+# - knearest: OK
+# - info: OK
+# - voting
+# - delaunay: OK
+# - uniquePairs: OK
 # - crossValidation
 
 
@@ -155,8 +157,8 @@ def factor(S,action):
 
 def extractFactor(S,V,factor):
 	Sfactor = S[:factor,:factor]
-	Vfactor = V[:,:factor] #Modifiquei aqui pois na apostila está assim 
-	AUXfactor = np.dot(Sfactor, Vfactor.transpose()) #Modifiquei aqui pois na apostila está assim 
+	Vfactor = V[:,:factor] 
+	AUXfactor = np.dot(Sfactor, Vfactor.transpose()) 
 	return AUXfactor
 
 
@@ -240,9 +242,6 @@ def info(seqs, position, info):
 
 
 def delaunay(matrix):
-
-	# Actions:
-	# - invert: invert columns and lines in the matrix
 
 	element = []
 	coord = []
