@@ -16,6 +16,7 @@ import itertools
 import numpy as np
 from scipy.spatial import Delaunay,distance
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from mpl_toolkits.mplot3d import Axes3D
 import math
 import os
@@ -170,16 +171,19 @@ def plot2(matrix,action):
 	# Actions:
 	# - plot: shows the factor figure  
 	# - save: save the factor figure in the disk
-	colors = np.random.rand(matrix.shape[1])
-	s = matrix[:2,:]
-
+	numSeq = matrix.shape[1]
+	colors = cm.rainbow(np.linspace(0, 1, numSeq))
+	
 	# Generating figure
 	fig = plt.figure()
 	fig.suptitle('Factor plot')
-	x = s[:1,:]
-	y = s[1:2,:]
-	plt.scatter(x, y, s = 100, c=colors, alpha=0.5)
-
+	for i in range(numSeq):
+		x = matrix[0:1, i:i+1]
+		y = matrix[1:2, i:i+1]
+		family ="Family %s"% str(i+1)
+		plt.scatter(x, y, s = 100, c=colors[i], alpha=0.5, label= family )
+	
+	plt.legend( loc='lower left', scatterpoints = 1, ncol=4, fontsize=10 ) #Legenda do plot
 	# Save figure
 	if action == 'save':
 		fig.savefig('factor2d.png', dpi=300)
@@ -194,19 +198,24 @@ def plot3(matrix,action):
 	# Actions:
 	# - plot: shows the factor figure  
 	# - save: save the factor figure in the disk
-	colors = np.random.rand(matrix.shape[1])
-	s = matrix[:3,:]
+	numSeq = matrix.shape[1]
 
 	# Generating figure
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 	fig.suptitle('Factor plot')
-	x = s[:1,:]
-	y = s[1:2,:]
-	z = s[2:3,:]
-	ax.scatter(x, y, z, c=colors, marker='o', s = 100)
+	
+	colors = cm.rainbow(np.linspace(0, 1, numSeq))
 
+	for i in range(numSeq):
+		family ="Family %s"% str(i+1)
+		x = matrix[0:1, i:i+1]
+		y = matrix[1:2, i:i+1]
+		z = matrix[2:3, i:i+1]
 
+		ax.scatter(x, y, z ,c=colors[i] ,marker='o', s = 100, label= family ) #Adicionando cada familia ao plot.
+
+	plt.legend( loc='lower left', scatterpoints = 1, ncol=4, fontsize=10 ) #Legenda do plot
 	# Save figure
 	if action == 'save':
 		fig.savefig('factor3d.png', dpi=300)

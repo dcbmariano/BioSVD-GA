@@ -52,3 +52,4 @@ print "The three nearest neighboors of %s are:\n1. %s\n2. %s\n3. %s\n" \
 %(BioSVD.info(seqs,1,'name'), BioSVD.info(seqs,nearest[0],'name'), BioSVD.info(seqs,nearest[1],'name'), BioSVD.info(seqs,nearest[2],'name'))
 
 
+
