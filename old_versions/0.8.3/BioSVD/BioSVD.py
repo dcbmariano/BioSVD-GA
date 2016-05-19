@@ -163,7 +163,7 @@ def extractFactor(S,V,factor):
 	AUXfactor = np.dot(Sfactor, Vfactor.transpose()) 
 	return AUXfactor
 
-
+# Reduz a dimensao da matrix de acordo com o parametro dim
 def reductor(matrix,dim):
 	pca = PCA( n_components=dim )
 	newmatrix = pca.fit_transform(matrix)
