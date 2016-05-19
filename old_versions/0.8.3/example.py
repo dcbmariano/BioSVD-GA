@@ -30,6 +30,9 @@ s = BioSVD.factor(S,'plot')
 # Testing function "extractFactor"
 mfkmer_3 = BioSVD.extractFactor(S,V,3)
 
+# Testeing function "reductor"
+reduced_matrix = BioSVD.reductor(mfkmer_3 , 3)
+
 # Testing function "plot2"
 BioSVD.plot2(mfkmer_3,'plot')
 

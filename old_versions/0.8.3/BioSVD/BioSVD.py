@@ -9,6 +9,7 @@
 
 
 # Requirements
+from sklearn.decomposition import PCA
 from numpy import linalg as LA
 from scipy.sparse.linalg import svds as SVDS
 from Bio import SeqIO
@@ -164,7 +165,10 @@ def extractFactor(S,V,factor):
 
 
 def reductor(matrix,dim):
-	print "Coming soon."
+	pca = PCA( n_components=dim )
+	newmatrix = pca.fit_transform(matrix)
+
+	return newmatrix
 
 
 def plot2(matrix,action):
