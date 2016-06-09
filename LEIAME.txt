@@ -1,4 +1,15 @@
-# BioSVD - Log de versões
+# BioSVD-GA
+
+
+# Como instalar?
+Copie o diretório BioSVD-GA. 
+BioSVD-GA requer python-sklearn
+No Ubuntu instale com:
+sudo apt-get install python-sklearn
+
+
+# Declarando BioSVD-GA
+from BioSVD-GA import *
 
 
 # ****** Hierarquia do repositório  ******
