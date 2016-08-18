@@ -5,7 +5,7 @@
 # Description: Library with
 #      Author: Thiago da Silva Correia, Diego Mariano, Jose Renato Barroso, Raquel Cardoso de Melo-Minardi
 #        Date: April 18, 2016
-#     Version: 0.8.1 alpha
+#     Version: 0.8.3 alpha
 
 
 # Requirements
@@ -24,6 +24,7 @@ import os
 from functools import partial
 from random import *
 import sys
+from math import sqrt
 
 
 # List of functions:
@@ -56,12 +57,19 @@ def read(format,*files):
 		for f_listas in files:
 			for f in f_listas:
 				seq_fasta = list(SeqIO.parse(open(f, "r"),"fasta"))
-
 				for s in seq_fasta:
 					seqs.append({'id':i, 'name': s.name, 'seq': str(s.seq), 'group': f})
 					i += 1
 
 	return seqs
+
+#Salva as sequencias no arquivo
+def save (seqs, index ):
+	f = open("possivesTolerantes.fasta", "w")
+	for i in index:
+		f.write( str(seqs[i]['name'] ) + '\n')
+		f.write( str(seqs[i]['seq'] )+ '\n')
+	f.close()
 
 
 # Function kmer: receives a sequence object and return a k-mer matrix
@@ -137,24 +145,40 @@ def factor(S,action):
 	# Actions:
 	# - plot: shows the factor figure  
 	# - save: save the factor figure in the disk
-
 	s = np.diag(S)
 	s = s*(1/np.sum(s))
 	s = list(reversed(s))
 
+	i=0
+	while s[i] == 0:
+		i = i+1
+	if i is not 0:
+		i= i-1
+
 	# Generating figure
 	fig = plt.figure()
 	fig.suptitle('Factor plot')
-	plt.plot(s)
+	#plt.axis([0, 1000, 0, 0.020])
+	plt.plot(s[i:])
 
 	# Save figure
 	if action == 'save':
-		fig.savefig('factor.png', dpi=300)
+		fig.savefig('factor.pdf')
 		plt.close(fig)
 
 	# Ploting figure
 	elif action == 'plot':
 		plt.show()
+	
+	Max = 0
+	factor = 0
+	for i in range(len(s)-1):
+		temp = s[i] - s[i+1]
+		if( temp > Max ):
+			Max = temp
+			factor = i
+
+	return factor
 
 
 def extractFactor(S,V,factor):
@@ -165,32 +189,42 @@ def extractFactor(S,V,factor):
 
 # Reduz a dimensao da matrix de acordo com o parametro dim
 def reductor(matrix,dim):
+
 	pca = PCA( n_components=dim )
 	newmatrix = pca.fit_transform(matrix)
 
-	return newmatrix
+	return newmatrix.T
 
 
-def plot2(matrix,action):
+def plot2(matrix,action,numSeqNQuery ,coord,r ):
 	# Actions:
 	# - plot: shows the factor figure  
 	# - save: save the factor figure in the disk
 	numSeq = matrix.shape[1]
-	colors = cm.rainbow(np.linspace(0, 1, numSeq))
 	
 	# Generating figure
 	fig = plt.figure()
 	fig.suptitle('Factor plot')
-	for i in range(numSeq):
-		x = matrix[0:1, i:i+1]
-		y = matrix[1:2, i:i+1]
-		family ="Family %s"% str(i+1)
-		plt.scatter(x, y, s = 100, c=colors[i], alpha=0.5, label= family )
-	
-	plt.legend( loc='lower left', scatterpoints = 1, ncol=4, fontsize=10 ) #Legenda do plot
+	ax=fig.add_subplot(1,1,1)
+
+	x = matrix[0:1, numSeqNQuery:]
+	y = matrix[1:2, numSeqNQuery:]
+	family ="Unknown"
+	plt.scatter(x, y, s = 60, c='g', alpha=0.5, label= family )
+
+	x = matrix[0:1, :numSeqNQuery]
+	y = matrix[1:2, :numSeqNQuery]
+	family ="Tolerant"
+	plt.scatter(x, y, s = 60, c='r', alpha=0.5, label= family )
+
+	plt.legend( scatterpoints = 1, ncol=4, fontsize=10 ) #Legenda do plot
+
+	#Adicionando circulo
+	circle2 = plt.Circle((coord[0][0], coord[0][1]), r , color='b', fill=False)
+	ax.add_patch(circle2)
 	# Save figure
 	if action == 'save':
-		fig.savefig('factor2d.png', dpi=300)
+		fig.savefig('factor2d.png', dpi = 300)
 		plt.close(fig)
 
 	# Ploting figure
@@ -198,7 +232,7 @@ def plot2(matrix,action):
 		plt.show()
 
 
-def plot3(matrix,action):
+def plot3(matrix,action,numSeqNQuery ):
 	# Actions:
 	# - plot: shows the factor figure  
 	# - save: save the factor figure in the disk
@@ -208,21 +242,23 @@ def plot3(matrix,action):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 	fig.suptitle('Factor plot')
-	
-	colors = cm.rainbow(np.linspace(0, 1, numSeq))
 
-	for i in range(numSeq):
-		family ="Family %s"% str(i+1)
-		x = matrix[0:1, i:i+1]
-		y = matrix[1:2, i:i+1]
-		z = matrix[2:3, i:i+1]
+	x = matrix[0:1, numSeqNQuery:]
+	y = matrix[1:2, numSeqNQuery:]
+	z = matrix[2:3, numSeqNQuery:]
+	family ="Unknown"
+	ax.scatter(x, y, z, s = 100, c='g', alpha=0.5, label= family )
 
-		ax.scatter(x, y, z ,c=colors[i] ,marker='o', s = 100, label= family ) #Adicionando cada familia ao plot.
+	x = matrix[0:1, 0:numSeqNQuery]
+	y = matrix[1:2, 0:numSeqNQuery]
+	z = matrix[2:3, 0:numSeqNQuery]
+	family ="Tolerant"
+	ax.scatter(x, y, z, s = 100, c='r', alpha=0.5, label= family )
 
 	plt.legend( loc='lower left', scatterpoints = 1, ncol=4, fontsize=10 ) #Legenda do plot
 	# Save figure
 	if action == 'save':
-		fig.savefig('factor3d.png', dpi=300)
+		fig.savefig('factor3d.png', dpi = 300)
 		plt.close(fig)
 
 	# Ploting figure
@@ -291,25 +327,72 @@ def uniquePairs(delaunay):
 def crossValidation():
 	print "Coming soon."
 
+#Calcula a ditancia ate (x,y) centroide
+def distance(matrix , coord):
+	
+	elements = matrix.shape[1]
+	dist = np.zeros(shape=(1, elements))
+	dim = coord.shape[1]
+	r=0
+	aux = 0
+
+	for j in range(elements):
+		aux = 0
+		for k in range(dim):
+			aux = aux + (coord[0][k] - matrix[k][j])**2
+		dist[0][j] = sqrt( aux )
+		if dist[0][j] > r:
+			r = dist[0][j]
+
+	return dist,r
+
+#Calculo as coordenadas do centroid e o raio
+def centroide( matrix , dim):
+	tam = matrix.shape[1]
+	coord = np.zeros(shape=(1, dim))
+	r=0
+	for i in range(dim):
+		for j in range(tam):
+			coord[0][i] = coord[0][i] + matrix[i][j]
+	
+	coord = coord*1.0/(tam)
+
+	dist ,r = distance(matrix , coord)
+	return coord,r
+
+#Retorna todas as sequencias de tolerancia desconhecida dentro do raio do centroide
+def centroideSeqs(coord,r, matrix, tam):
+	seqs = []
+	elements = matrix.shape[1]
+	d =0
+	dim = coord.shape[1]
+	for j in range(tam,elements ):
+		aux = 0
+		for k in range(dim):
+			aux = aux + ( coord[0][k] -  matrix[k][j] )**2
+
+		d = sqrt( aux )
+		if d <= r:
+			seqs.append(j)
+	return seqs
+
 
 def dist(matrix):
 	# input matrix => m (rows) x n (cols)
 	# output matrix => n x n (distance all against all)
 
-	from math import sqrt
-
 	elements = len(matrix[0])
-	dist = []
+	dist = np.zeros(shape=(elements, elements))
 	last = []
 	d = 0
 
 	for i in range(elements):
 		for j in range(elements):
 			# euclidian distance
-			d = sqrt((matrix[0][i] - matrix[0][j])**2 + (matrix[1][i] - matrix[1][j])**2 + (matrix[2][i] - matrix[2][j])**2)
+			dist[i][j] = sqrt((matrix[0][i] - matrix[0][j])**2 + (matrix[1][i] - matrix[1][j])**2 + (matrix[2][i] - matrix[2][j])**2)
 			last.append(d)
 
-		dist.append(last)
+		#dist.append(last)
 		last = list()
 
 	return dist
